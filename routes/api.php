@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projects/{projectId}/tasks', [TaskController::class, 'getTasksByProjectId']);
     Route::post('/projects/{projectId}/tasks', [TaskController::class, 'createTask']);
     Route::post('/tasks/{taskId}/status', [TaskController::class, 'updateTaskStatus']);
+    Route::delete('/tasks/{taskId}', [TaskController::class, 'deleteTask']);
+
     // Routes pour les projets
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::post('/projects', [ProjectController::class, 'store']);
@@ -34,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/user1', [UserController::class, 'getUser']);
+    Route::post('/user/avatar', [UserController::class, 'updatePhoto']);
+
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::get('/users', [UserController::class, 'index']);
     Route::delete('/usersAccount/{user}', [UserController::class, 'destroyUsers']);

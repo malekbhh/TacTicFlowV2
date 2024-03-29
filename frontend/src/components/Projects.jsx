@@ -3,6 +3,8 @@ import axiosClient from "../axios-client.js";
 import { useSelector } from "react-redux";
 import bin from "../assets/bin.png";
 import Alert from "./Alert";
+import toast, { Toaster } from "react-hot-toast";
+
 import { Link } from "react-router-dom";
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -50,14 +52,10 @@ const Projects = () => {
         await axiosClient.delete(`/projects/${projectId}`, {
           withCredentials: true,
         });
-        setAlertType("success");
-        setAlertMessage("Projet supprimé avec succès !");
-        setShowAlert(true);
+        toast.success("Project deleted successfully!");
         loadProjects();
       } catch (error) {
-        setAlertType("danger");
-        setAlertMessage("Erreur lors de la suppression du projet.");
-        setShowAlert(true);
+        toast.error("Error deleting project!");
         console.error(
           `Erreur lors de la suppression du projet : ${error.message}`
         );
@@ -89,7 +87,7 @@ const Projects = () => {
             projects.map((project) => (
               <div key={project.id} className="mb-4 h-300">
                 <Link to={`/project/${project.id}`}>
-                  <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden h-60 shadow-md  flex flex-col">
+                  <div className="dark:bg-black relative dark:bg-opacity-30 bg-white bg-opacity-30 rounded-lg overflow-hidden h-60 shadow-md flex flex-col">
                     <div className="p-4 flex-1 overflow-y-auto">
                       <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
                         {project.title}
@@ -97,6 +95,12 @@ const Projects = () => {
                       <p className="text-gray-600 dark:text-gray-300 text-sm">
                         {project.description}
                       </p>
+                      {project.deadline && (
+                        <p className="text-gray-500 absolute bottom-4  flex  items-end dark:text-gray-400 text-sm">
+                          Deadline:{" "}
+                          {new Date(project.deadline).toLocaleDateString()}
+                        </p>
+                      )}
                     </div>
                     <div className="flex justify-end p-4">
                       <button

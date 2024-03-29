@@ -18,12 +18,22 @@ const DefaultLayout = () => {
   const boards = useSelector((state) => state.boards);
   const board = boards.find((board) => board.isActive);
   useEffect(() => {
-    if (token && user) {
-      axiosClient.get("/user").then(({ data }) => {
-        setUser(data);
-      });
-    }
-  }, [token, user, setUser]);
+    const fetchUser = async () => {
+      try {
+        if (token) {
+          const { data } = await axiosClient.get("/user");
+          setUser(data);
+          axiosClient.get("/user1").then(({ data }) => {
+            setUser(data);
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, [token, setUser]);
 
   const handleDropdownToggle = () => {
     setDropdownOpen(!isDropdownOpen);
@@ -44,68 +54,62 @@ const DefaultLayout = () => {
   return (
     <div className="flex bg-gradient-light  dark:bg-gradient-dark">
       <aside
-        className="
-         bg-white
-          top-5
-          left-3
-          fixed
-        rounded-[30px]
-        bg-opacity-70
-         
-          z-40
-          w-[14%]
-          h-[94%]
-          pt-4  pl-1
+        className="w-64 bg-white  bg-opacity-30 top-5 left-3 fixed rounded-[30px] z-40 h-[94%]
+  pt-4  pl-1
           transition-transform
           -translate-x-full
          
           sm:translate-x-0
 
-           dark:bg-black dark:bg-opacity-30
+           dark:bg-black dark:bg-opacity-30 
         "
       >
         {" "}
         <div className=" px-3    ">
           <div className="flex items-start justify-start  pb-4    ">
-            <Link to="/">
-              <span className="flex items-center space-x-1 font-bold text-xl ">
-                <img
-                  src="/logo2.png"
-                  className="w-10 h-10 rounded-full"
-                  alt="TacTicFlowLogo"
-                />
-                <span className="text-base tracking-[0.19em] text-midnightblue font-bold dark:text-white ">
-                  acticFlow
-                </span>
-              </span>
-            </Link>
-          </div>
-          <ul className="space-y-6 mt-4  font-medium">
-            <li className="flex items-center ">
-              <svg
-                className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 18 18"
-                strokeWidth="2"
-                clipRule="evenodd" // Change 'clip-rule' to 'clipRule'
-                fillRule="evenodd" // Change 'fill-rule' to 'fillRule'
-                strokeLinecap="round" // Change 'stroke-linecap' to 'strokeLinecap'
-                strokeLinejoin="round"
+            <a href="https://tac-tic.net/" className="flex pb-4 items-center ">
+              <img
+                src="/logo2.png"
+                className="h-12 mr-1 md:h-8 lg:h-12"
+                alt="TacTicFlowLogo"
+              />
+              <span
+                className={` text-2xl  font-bold font-inherit mt-1 dark:text-white text-[#212177]  ${
+                  typeof window !== "undefined" && window.innerWidth < 600
+                    ? "text-lg"
+                    : ""
+                }`}
+                style={{
+                  letterSpacing: window.innerWidth < 600 ? "2px" : "4px",
+                }}
               >
-                <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
-              </svg>
+                actiwFlow
+              </span>
+            </a>
+          </div>
+          <ul className="space-y-6 mt-4 ml-4 font-medium">
+            <li>
               <Link to="/projects">
                 <a
                   href="#"
                   className="logo flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
                 >
+                  {" "}
+                  <svg
+                    className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 18 18"
+                    strokeWidth="2"
+                    clipRule="evenodd" // Change 'clip-rule' to 'clipRule'
+                    fillRule="evenodd" // Change 'fill-rule' to 'fillRule'
+                    strokeLinecap="round" // Change 'stroke-linecap' to 'strokeLinecap'
+                    strokeLinejoin="round"
+                  >
+                    <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
+                  </svg>
                   <span className="flex-1 ms-3 whitespace-nowrap">
-                    <FontAwesomeIcon
-                      icon={["fas", "grip-horizontal"]}
-                      className="w-5 h-5 text-gray-500 -translate-x-3 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    />
                     Projects
                   </span>
                 </a>
@@ -113,8 +117,8 @@ const DefaultLayout = () => {
             </li>
 
             <li>
-              <a
-                href="#"
+              <Link
+                to="/profile"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
               >
                 <FontAwesomeIcon
@@ -122,7 +126,7 @@ const DefaultLayout = () => {
                   className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Profil</span>
-              </a>
+              </Link>
             </li>
             <li>
               <a
@@ -200,23 +204,25 @@ const DefaultLayout = () => {
           </ul>
         </div>
       </aside>
-      <nav className="fixed top-6 bg-opacity-70 flex items-start justify-between   rounded-[25px] z-50 right-3 w-[83%] ">
+      <nav className="fixed pl-20  top-6 bg-opacity-70 flex items-start justify-between   rounded-[25px] z-50 right-3 w-[83%] ">
         {/* search bar */}
-        <div className="  flex items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
-          
-          <input type="text" className="bg-transparent w-80 focus:outline-none text-white "  />
+        <div className=" flex mt-2  items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
+          <input
+            type="text"
+            className="bg-transparent w-80 focus:outline-none text-white "
+          />
           <img src={search} alt="search icon" className="h-4 text-slate-500" />
         </div>
 
-        <div className="px-3 py-3 lg:px-5 lg:pl-3">
+        <div className="px-3 py-1  lg:px-5 lg:pl-3">
           <div className="flex items-center justify-end">
             {/* right side  */}
             <div className="flex space-x-4 items-center md:space-x-6">
               <div className="flex space-x-4 items-center md:space-x-6">
                 <button
-                  className="bg-white bg-opacity-70 py-2 px-4 rounded-full 
-        text-midnightblue text-base font-semibold hover:opacity-80
-        duration-200 button hidden md:block dark:bg-indigo-500 dark:bg-opacity-60 dark:text-white"
+                  className="text-white  py-2 px-4 rounded-full 
+        bg-midnightblue text-base font-semibold hover:opacity-80
+        duration-200 button hidden md:block dark:bg-indigo-500  dark:text-white"
                   onClick={() => {
                     setBoardModalOpen((state) => !state);
                   }}
@@ -243,11 +249,19 @@ const DefaultLayout = () => {
                     data-dropdown-toggle="dropdown-user"
                   >
                     <span className="sr-only">Open user menu</span>
-                    <img
-                      className="w-8 h-8 rounded-full"
-                      src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-                      alt="user photo"
-                    />
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt="Profile"
+                        className="h-10 w-10 rounded-full"
+                      />
+                    ) : (
+                      <img
+                        className="w-8 h-8 rounded-full"
+                        src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                        alt="user photo"
+                      />
+                    )}
                   </button>
                 </div>
                 <div
@@ -302,7 +316,7 @@ const DefaultLayout = () => {
       <div className="mt-20 sm:ml-64 w-[100%] mr-3 ">
         <div className=" ">
           <div
-            className=" flex items-start h-screen
+            className="pl-11 flex items-start h-screen
            justify-center pt-6 rounded  overflow-y-clip "
           >
             {boardModalOpen && (

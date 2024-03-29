@@ -8,6 +8,11 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\AuthorizedUser; 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str; // For generating unique filenames
+use Illuminate\Http\JsonResponse;
 use App\Http\Resources\AuthorizedUserResource;
 use App\Http\Requests\StoreUnAuthoUserRequest;
 use App\Models\UnAuthorizedUser;
@@ -158,5 +163,70 @@ public function authorizeUnauthorizedUser(UnauthorizedUser $user)
         ], 500);
     }
 }
+public function getUser(Request $request)
+{
+    // Récupérer l'utilisateur authentifié
+    $user = $request->user();
 
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+    }
+
+    // Ajouter l'URL de l'avatar à la réponse JSON
+    $avatarUrl = $user->avatar ? asset('storage/avatars/' . $user->avatar) : null;
+    $userData = [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'avatar' => $avatarUrl,
+    ];
+
+    // Retourner les données de l'utilisateur
+    return response()->json($userData);
+}
+
+public function updatePhoto(Request $request)
+{
+    // Check for file, access control, and validation
+    $validator = Validator::make($request->all(), [
+        'avatar' => 'required|image|mimes:jpeg,png,jpg', // Adjust limits as needed
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
+    }
+
+    if (!$request->hasFile('avatar') || !Auth::check()) {
+        return response()->json(['error' => 'Unauthorized or no avatar provided'], 400);
+    }
+
+    // Get the authenticated user
+    $user = Auth::user();
+
+    // Get the uploaded file
+    $avatar = $request->file('avatar');
+
+    // Generate a unique filename with extension
+    $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
+
+    // Secure storage with access control (consider private storage)
+    $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
+    $path = $disk->put($avatarName, $avatar->getContent());
+
+    if (!$path) {
+        return response()->json(['error' => 'Failed to store avatar'], 500);
+    }
+
+    // Update the user's avatar path in the database
+    $user->avatar = $avatarName;
+    $user->save();
+
+    // Return a JSON response with the avatar URL (consider security)
+    $avatarUrl = $disk->url($avatarName); // Use custom disk URL if applicable
+
+    return response()->json([
+        'avatar' => $avatarUrl, // Adjust based on your storage configuration
+    ]);
+}
 }

@@ -6,6 +6,8 @@ use App\Models\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator; 
+
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
@@ -17,27 +19,33 @@ class ProjectController extends Controller
         return response()->json($projects);
     }
 
-    public function show($projectId)
-    {
-        $project = Project::findOrFail($projectId);
-        return response()->json($project);
-    }
-    
-    
-
+   
     public function store(Request $request)
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
+    // Valider les données envoyées dans la requête
+    $validatedData = $request->validate([
+        'title' => 'required|string',
+        'description' => 'required|string',
+        'deadline' => 'nullable|date', // Assurez-vous que la date est valide
+    ]);
 
-        $project = $user->projects()->create($validatedData);
-
+    // Créez un nouveau projet avec les données validées
+    try {
+        $project = new Project();
+        $project->title = $validatedData['title'];
+        $project->description = $validatedData['description'];
+        $project->user_id = $user->id;
+        $project->deadline = $validatedData['deadline']; // Assurez-vous que le nom du champ correspond à celui dans votre modèle Project
+        $project->save();
+    
         return response()->json($project, 201);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to create project.'], 500);
     }
+}
+
     public function update(Request $request, Project $project)
     {
         $user = Auth::user();
@@ -90,7 +98,11 @@ class ProjectController extends Controller
         return response()->json($project);
     }
  
-    
+    public function show($projectId)
+    {
+        $project = Project::findOrFail($projectId);
+        return response()->json($project);
+    }
     public function addTask(Request $request, Project $project)
     {
         $user = Auth::user();

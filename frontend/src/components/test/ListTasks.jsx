@@ -2,37 +2,43 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useDrag, useDrop } from "react-dnd";
 import axiosClient from "../../axios-client";
-import plus from "./plus.png"
+import plus from "./plus.png";
 function ListTasks({ projectId, tasks, setTasks }) {
   const [todos, setTodos] = useState([]);
   const [doings, setDoings] = useState([]);
   const [dones, setDones] = useState([]);
-  const [newCard,setNewCard]=useState([])
+  const [closeds, setCloseds] = useState([]);
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const response = await axiosClient.get(`/projects/${projectId}/tasks`);
         setTasks(response.data);
-        const filteredTodos = tasks.filter((task) => task.status === "To Do");
-        const filteredDoings = tasks.filter((task) => task.status === "Doing");
-        const filteredDones = tasks.filter((task) => task.status === "Done");
-        setTodos(filteredTodos);
-        setDoings(filteredDoings);
-        setDones(filteredDones);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
 
     fetchTasks();
-  }, [projectId, tasks]);
+  }, [projectId, setTasks]);
 
-  const statuses = ["To Do", "Doing", "Done" ];
+  useEffect(() => {
+    const filteredTodos = tasks.filter((task) => task.status === "To Do");
+    const filteredDoings = tasks.filter((task) => task.status === "Doing");
+    const filteredDones = tasks.filter((task) => task.status === "Done");
+    const filteredClosed = tasks.filter((task) => task.status === "Closed");
+
+    setTodos(filteredTodos);
+    setDoings(filteredDoings);
+    setDones(filteredDones);
+    setCloseds(filteredClosed);
+  }, [tasks]);
+
+  const statuses = ["To Do", "Doing", "Done", "Closed"];
 
   return (
     <div className="flex gap-16">
       {statuses.map((status, index) => (
-        <Section 
+        <Section
           key={index}
           status={status}
           tasks={tasks}
@@ -40,20 +46,23 @@ function ListTasks({ projectId, tasks, setTasks }) {
           todos={todos}
           doings={doings}
           dones={dones}
-          newCard={newCard}
+          closeds={closeds}
         />
-      ))} 
-           <div className="
-           bg-slate-500 items-center flex justify-center bg-opacity-15 rounded-lg w-64 h-40">
-         <img src={plus}/>
+      ))}
     </div>
-    </div>
-
   );
 }
 
 export default ListTasks;
-const Section = ({ status, tasks, setTasks, todos, doings, dones }) => {
+const Section = ({
+  status,
+  tasks,
+  setTasks,
+  todos,
+  doings,
+  dones,
+  closeds,
+}) => {
   const fetchTasks = async () => {
     try {
       const response = await axiosClient.get(`/projects/${projectId}/tasks`);
@@ -100,6 +109,11 @@ const Section = ({ status, tasks, setTasks, todos, doings, dones }) => {
     bg = "bg-green-500";
     tasksToMap = dones;
   }
+  if (status === "Closed") {
+    text = "closed ";
+    bg = "bg-red-500";
+    tasksToMap = closeds;
+  }
   const addItemToSection = (id) => {
     setTasks((prev) => {
       const mTasks = prev.map((t) => {
@@ -114,7 +128,9 @@ const Section = ({ status, tasks, setTasks, todos, doings, dones }) => {
   return (
     <div
       ref={drop}
-      className={`w-64 bg-white min-h-40 h-fit  dark:bg-black dark:bg-opacity-30   rounded-md p-2 ${isOver ? "bg-opacity-30" : "bg-opacity-70"}`}
+      className={` bg-white bg-opacity-30 w-60 min-h-40 h-fit  dark:bg-black dark:bg-opacity-30 rounded-lg p-2 ${
+        isOver ? "bg-opacity-30" : "bg-opacity-70"
+      }`}
     >
       {" "}
       <Header text={text} bg={bg} count={tasksToMap.length} />{" "}
@@ -146,13 +162,23 @@ const Task = ({ task, tasks, setTasks }) => {
     }),
   }));
   console.log(isDragging);
-  const handleremove = (id) => {
-    console.log(id);
-    const fTasks = tasks.filter((t) => t.id !== id);
-    localStorage.setItem("tasks", JSON.stringify(fTasks));
-    setTasks(fTasks);
-    toast("Task removed", { icon: "👽" });
+
+  const handleremove = async (id) => {
+    try {
+      // Envoyer une requête DELETE pour supprimer la tâche du backend
+      await axiosClient.delete(`/tasks/${id}`);
+
+      // Mettre à jour l'état local des tâches après la suppression réussie
+      const fTasks = tasks.filter((t) => t.id !== id);
+      localStorage.setItem("tasks", JSON.stringify(fTasks));
+      setTasks(fTasks);
+      toast("Task removed", { icon: "👽" });
+    } catch (error) {
+      console.error("Error removing task:", error);
+      toast.error("Error removing task. Please try again.");
+    }
   };
+
   return (
     <div
       ref={drag}
@@ -161,6 +187,9 @@ const Task = ({ task, tasks, setTasks }) => {
       }`}
     >
       <p className="text-black dark:text-white ">{task.title}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {task.due_date}
+      </p>{" "}
       <button
         className="absolute bottom-1 right-1 text-slate-400 "
         onClick={() => handleremove(task.id)}

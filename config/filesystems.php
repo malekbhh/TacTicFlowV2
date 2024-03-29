@@ -35,7 +35,12 @@ return [
             'root' => storage_path('app'),
             'throw' => false,
         ],
-
+        'avatars' => [
+            'driver' => 'local', // Adjust driver if needed (e.g., 's3' for Amazon S3)
+            'root' => public_path('storage/avatars'), // Adjust path if needed
+            'url' => env('APP_URL') . '/storage/avatars', // Adjust URL if needed
+            'visibility' => 'public', // Adjust visibility if needed
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
