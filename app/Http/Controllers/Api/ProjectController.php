@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator; 
-
+use App\Models\Membership;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
@@ -15,10 +15,19 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $projects = $user->projects;
-        return response()->json($projects);
+        if (!$user->memberships->isEmpty()) {
+            // Récupérer les IDs des projets associés à cet utilisateur dans la table memberships
+            $projectIds = $user->memberships->pluck('project_id');
+    
+            // Récupérer les projets correspondant aux IDs récupérés
+            $projects = Project::whereIn('id', $projectIds)->get();
+    
+            return response()->json($projects);
+        } else {
+            // Aucune adhésion trouvée, renvoyer un message approprié
+            return response()->json(['message' => 'No projects found for this user'], 404);
+        }
     }
-
    
     public function store(Request $request)
 {
@@ -40,6 +49,11 @@ class ProjectController extends Controller
         $project->deadline = $validatedData['deadline']; // Assurez-vous que le nom du champ correspond à celui dans votre modèle Project
         $project->save();
     
+        Membership::create([
+            'user_id' => $user->id,
+            'project_id' => $project->id,
+            'user_role' => 'chef',
+        ]);
         return response()->json($project, 201);
     } catch (\Exception $e) {
         return response()->json(['error' => 'Failed to create project.'], 500);

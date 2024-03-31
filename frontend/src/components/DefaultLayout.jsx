@@ -206,12 +206,12 @@ const DefaultLayout = () => {
       </aside>
       <nav className="fixed pl-20  top-6 bg-opacity-70 flex items-start justify-between   rounded-[25px] z-50 right-3 w-[83%] ">
         {/* search bar */}
-        <div className=" flex mt-2  items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
-          <input
+        <div className=" flex mt-2  items-center  opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
+          {/* <input
             type="text"
             className="bg-transparent w-80 focus:outline-none text-white "
           />
-          <img src={search} alt="search icon" className="h-4 text-slate-500" />
+          <img src={search} alt="search icon" className="h-4 text-slate-500" /> */}
         </div>
 
         <div className="px-3 py-1  lg:px-5 lg:pl-3">

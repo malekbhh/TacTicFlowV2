@@ -10,7 +10,27 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator; 
 class TaskController extends Controller
 {
-   
+  public function getTaskDetails($taskId) {
+    try {
+        $task = Task::find($taskId);
+        
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+        
+        return response()->json($task);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to retrieve task details'], 500);
+    }
+}
+
+  public function index($projectId)
+  {
+      // Récupérer les tâches associées à un projet spécifique
+      $tasks = Task::where('project_id', $projectId)->get();
+
+      return response()->json($tasks);
+  }
 
   public function getTasksByProjectId($projectId) {
     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status']); // Ajoutez 'due_date' à la sélection

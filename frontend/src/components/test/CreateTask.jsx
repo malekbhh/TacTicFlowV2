@@ -95,6 +95,7 @@ function CreateTask({ projectId, setTasks }) {
       setTaskName("");
       setDueDate(null); // Réinitialiser la date après la création de la tâche
       setTasks((prevTasks) => [...prevTasks, response.data]);
+
       setShowInput(false); // Cacher l'entrée après la création de la tâche
     } catch (error) {
       console.error("Error creating task:", error);

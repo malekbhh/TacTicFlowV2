@@ -7,6 +7,10 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\Api\MembershipController;
+use App\Http\Controllers\Api\TaskMembershipController;
+
+use App\Http\Controllers\EmployeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +28,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/projects/{projectId}/tasks', [TaskController::class, 'createTask']);
     Route::post('/tasks/{taskId}/status', [TaskController::class, 'updateTaskStatus']);
     Route::delete('/tasks/{taskId}', [TaskController::class, 'deleteTask']);
+    Route::get('/tasks/{taskId}', [TaskController::class, 'getTaskDetails']);
 
+
+    Route::get('projects/{projectId}/members', [UserController::class, 'index1']);
+    Route::get('/tasks/{taskId}', [TaskController::class, 'getTaskDetails']);
+
+Route::post('/taskmemberships', [TaskMembershipController::class, 'create']);
+Route::post('/taskmemberships1', [TaskMembershipController::class, 'getUserTaskMemberships']);
+Route::get('/user', function (Request $request) {
+    return $request->user();
+});
     // Routes pour les projets
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::post('/projects', [ProjectController::class, 'store']);
@@ -32,10 +46,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/projects/{project}', [ProjectController::class, 'update']);
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
     Route::get('/projects/{idOrProject}', [ProjectController::class, 'showProject']);
- 
-            Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::post('/memberships', [MembershipController::class, 'store']);
+        
     Route::get('/user1', [UserController::class, 'getUser']);
     Route::post('/user/avatar', [UserController::class, 'updatePhoto']);
 
@@ -48,6 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/UnauthorizedUsers', [UserController::class, 'authorizeUnauthorizedUser']);
     Route::delete('/UnauthorizedUsers/{user}', [UserController::class, 'destroyUnauth']);
     Route::post('/users', [UserController::class, 'store']);
+
+        // Endpoint pour récupérer les employés associés à un projet spécifique
+        Route::get('/employees', [EmployeeController::class, 'index']);
+        Route::get('/{projectId}/tasks', [TaskController::class, 'index']);
 
 
     // Route de déconnexion

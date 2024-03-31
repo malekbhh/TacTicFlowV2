@@ -30,8 +30,8 @@ class Project extends Model
     {
         return $this->hasMany(Task::class);
     }
-    public function cards()
+    public function memberships()
     {
-        return $this->hasMany(Card::class);
+        return $this->hasMany(Membership::class);
     }
 }

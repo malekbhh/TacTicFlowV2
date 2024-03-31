@@ -7,6 +7,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\Membership;
+
 use App\Models\AuthorizedUser; 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -229,4 +231,17 @@ public function updatePhoto(Request $request)
         'avatar' => $avatarUrl, // Adjust based on your storage configuration
     ]);
 }
+
+public function index1($projectId)
+{
+    // Récupérer les utilisateurs associés à un projet spécifique ayant le rôle 'member'
+    $users = User::whereHas('memberships', function($query) use ($projectId) {
+        $query->where('project_id', $projectId)
+              ->where('user_role', 'member');
+    })->get(['name', 'email']);
+
+    return response()->json($users);
+}
+
+
 }

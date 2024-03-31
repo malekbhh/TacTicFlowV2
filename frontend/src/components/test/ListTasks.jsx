@@ -47,6 +47,7 @@ function ListTasks({ projectId, tasks, setTasks }) {
           doings={doings}
           dones={dones}
           closeds={closeds}
+          projectId={projectId}
         />
       ))}
     </div>
@@ -62,6 +63,7 @@ const Section = ({
   doings,
   dones,
   closeds,
+  projectId,
 }) => {
   const fetchTasks = async () => {
     try {
@@ -71,22 +73,25 @@ const Section = ({
       console.error("Error fetching tasks:", error);
     }
   };
-
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "task",
     drop: async (item) => {
       try {
-        // Use POST request to update task status
-        await axiosClient.post(`/tasks/${item.id}/status`, { status });
+        // Attendre que canDrop termine avant de continuer
+        const authorized = await canDrop(item);
 
-        // Update local task state after successful database update
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === item.id ? { ...task, status } : task
-          )
-        );
-        toast.success("Task updated successfully");
-        fetchTasks();
+        if (authorized) {
+          await axiosClient.post(`/tasks/${item.id}/status`, { status });
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task.id === item.id ? { ...task, status } : task
+            )
+          );
+          toast.success("Task updated successfully");
+          fetchTasks();
+        } else {
+          toast.error("You are not authorized to move this task.");
+        }
       } catch (error) {
         console.error("Error updating task:", error);
         toast.error("Error updating task. Please try again.");
@@ -96,6 +101,38 @@ const Section = ({
       isOver: !!monitor.isOver(),
     }),
   }));
+
+  const canDrop = async (item) => {
+    try {
+      // Faites une requête GET à la route '/user' pour récupérer les informations de l'utilisateur authentifié
+      const response = await axiosClient.get("/user");
+      const user = response.data;
+
+      if (!user) {
+        // Si aucun utilisateur n'est connecté, renvoyez false
+        return false;
+      }
+
+      // Récupérez l'ID de l'utilisateur connecté
+      const authenticatedUserId = user.id;
+
+      // Faites une requête POST à la route '/taskmemberships' pour vérifier si l'utilisateur peut déplacer la tâche
+      const taskMembershipResponse = await axiosClient.post(
+        "/taskmemberships1",
+        {
+          taskId: item.id,
+          userId: authenticatedUserId,
+        }
+      );
+
+      // Vérifiez si le task_id de la tâche déplacée correspond à un task_id auquel l'utilisateur est autorisé
+      return taskMembershipResponse.data.includes(item.id);
+    } catch (error) {
+      console.error("Error checking user permissions:", error);
+      return false;
+    }
+  };
+
   let text = "todo";
   let bg = "bg-slate-500";
   let tasksToMap = todos;
@@ -114,6 +151,7 @@ const Section = ({
     bg = "bg-red-500";
     tasksToMap = closeds;
   }
+
   const addItemToSection = (id) => {
     setTasks((prev) => {
       const mTasks = prev.map((t) => {
