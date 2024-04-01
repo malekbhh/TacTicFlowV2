@@ -8,7 +8,6 @@ import HeaderDropdown from "./HeaderDropdown.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faTasks } from "@fortawesome/free-solid-svg-icons";
-import search from "../assets/search.png";
 const DefaultLayout = () => {
   const { user, token, setUser, setToken } = useStateContext();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -52,19 +51,8 @@ const DefaultLayout = () => {
     return <Navigate to="/home" />;
   }
   return (
-    <div className="flex bg-gradient-light  dark:bg-gradient-dark">
-      <aside
-        className="w-64 bg-white  bg-opacity-30 top-5 left-3 fixed rounded-[30px] z-40 h-[94%]
-  pt-4  pl-1
-          transition-transform
-          -translate-x-full
-         
-          sm:translate-x-0
-
-           dark:bg-black dark:bg-opacity-30 
-        "
-      >
-        {" "}
+    <div className="flex h-screen  bg-gradient-light   dark:bg-gradient-dark">
+      <aside className="w-64 bg-white top-1  bg-opacity-30 my-3 left-3 fixed rounded-2xl h-[95%] pt-4  pl-1  transition-transform  -translate-x-full  sm:translate-x-0  dark:bg-black dark:bg-opacity-30 ">
         <div className=" px-3    ">
           <div className="flex items-start justify-start  pb-4    ">
             <a href="https://tac-tic.net/" className="flex pb-4 items-center ">
@@ -204,7 +192,7 @@ const DefaultLayout = () => {
           </ul>
         </div>
       </aside>
-      <nav className="fixed pl-20  top-6 bg-opacity-70 flex items-start justify-between   rounded-[25px] z-50 right-3 w-[83%] ">
+      <nav className="fixed pl-20  top-6 bg-opacity-70 flex items-start justify-between   rounded-[25px] right-3  ">
         {/* search bar */}
         <div className=" flex mt-2  items-center  opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
           {/* <input
@@ -313,11 +301,11 @@ const DefaultLayout = () => {
         </div>
       </nav>
 
-      <div className="mt-20 sm:ml-64 w-[100%] mr-3 ">
+      <div className="mt-20 sm:ml-64  w-[100%] mr-3 ">
         <div className=" ">
           <div
             className="pl-11 flex items-start h-screen
-           justify-center pt-6 rounded  overflow-y-clip "
+           justify-center pt-6 rounded   "
           >
             {boardModalOpen && (
               <AddEditBoardModal

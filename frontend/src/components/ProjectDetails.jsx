@@ -16,6 +16,7 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [showTable, setShowTable] = useState(false);
   const [employees, setEmployees] = useState([]);
+  const [isChef, setIsChef] = useState(false); // Ajout d'un état pour vérifier si l'utilisateur est chef de projet
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
@@ -30,6 +31,19 @@ const ProjectDetails = () => {
           `/projects/${projectId}/tasks`
         );
         setTasks(tasksResponse.data);
+
+        const userResponse = await axiosClient.get("/user");
+        const user = userResponse.data;
+        if (user && user.id) {
+          const isChefResponse = await axiosClient.post(
+            "/check-chef-permissions",
+            {
+              projectId: projectId,
+              userId: user.id,
+            }
+          );
+          setIsChef(isChefResponse.data.isChef); // Mis à jour de l'état en fonction de la réponse
+        }
       } catch (error) {
         console.error("Error loading project details:", error);
       }
@@ -71,75 +85,83 @@ const ProjectDetails = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Toaster />
-      <div className="rounded-[30px] w-full mt-6 justify-start flex flex-col border-slate-500 pb-6 h-full items-start gap-6">
-        {project && (
-          <div className="dark:text-white w-full text-midnightblue">
-            <div className="flex flex-col lg:flex-row gap-7  items-center ">
-              <div className="flex">
-                <div className="flex items-start justify-start  flex-col">
-                  <h2 className="text-3xl font-semibold    dark:text-white">
-                    {project.title}
-                  </h2>
-                  <p className="text-lg  text-gray-600 dark:text-gray-400">
-                    {project.description}
-                  </p>
+      <div className="rounded-[30px] h-screen w-full mt-6 justify-start flex flex-col border-slate-500 pb-6 items-start gap-6">
+        <div className="accesschef">
+          {" "}
+          {project && (
+            <div className="dark:text-white w-full text-midnightblue">
+              <div className="flex flex-col lg:flex-row gap-7  items-center ">
+                <div className="flex">
+                  <div className="flex items-start justify-start  flex-col">
+                    <h2 className="text-3xl font-semibold    dark:text-white">
+                      {project.title}
+                    </h2>
+                    <p className="text-lg  text-gray-600 dark:text-gray-400">
+                      {project.description}
+                    </p>
+                  </div>
+                  {isChef && (
+                    <BsPlus
+                      className="w-9 h-9    translate-y-2 cursor-pointer  dark:text-white transform hover:scale-110 transition duration-300 ease-in-out"
+                      onClick={toggleTable}
+                    />
+                  )}
                 </div>
-                <BsPlus
-                  className="w-9 h-9    translate-y-2 cursor-pointer  dark:text-white transform hover:scale-110 transition duration-300 ease-in-out"
-                  onClick={toggleTable}
-                />
-              </div>
-              {showTable && (
-                <div className="overflow-y-scroll rounded-lg shadow-md bg-white dark:bg-opacity-30 bg-opacity-30 dark:bg-slate-900 p-4">
-                  <table className="table-container mx-0">
-                    <thead className="table-header ">
-                      <tr>
-                        <th className="px-4 py-2 text-midnightblue dark:text-white">
-                          Name
-                        </th>
-                        <th className="px-4 py-2 text-midnightblue dark:text-white">
-                          Email
-                        </th>
-                        <th className="px-4 py-2 text-midnightblue dark:text-white">
-                          Add member
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="table-body">
-                      {employees.map((employee) => (
-                        <tr key={employee.id}>
-                          <td className="px-4 py-2">{employee.name}</td>
-                          <td className="px-4 py-2">{employee.email}</td>
-                          <td className="px-4 flex items-center justify-center py-2">
-                            {/* Appeler handleAddMember avec l'email de l'employé */}
-                            <button
-                              onClick={() => handleAddMember(employee.email)}
-                              className="bg-blue-500 flex  hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
-                            >
-                              Add
-                            </button>
-                          </td>
+                {showTable && (
+                  <div className="overflow-y-scroll rounded-lg shadow-md bg-white dark:bg-opacity-30 bg-opacity-30 dark:bg-slate-900 p-4">
+                    <table className="table-container mx-0">
+                      <thead className="table-header ">
+                        <tr>
+                          <th className="px-4 py-2 text-midnightblue dark:text-white">
+                            Name
+                          </th>
+                          <th className="px-4 py-2 text-midnightblue dark:text-white">
+                            Email
+                          </th>
+                          <th className="px-4 py-2 text-midnightblue dark:text-white">
+                            Add member
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+                      </thead>
+                      <tbody className="table-body">
+                        {employees.map((employee) => (
+                          <tr key={employee.id}>
+                            <td className="px-4 py-2">{employee.name}</td>
+                            <td className="px-4 py-2">{employee.email}</td>
+                            <td className="px-4 flex items-center justify-center py-2">
+                              {/* Appeler handleAddMember avec l'email de l'employé */}
+                              <button
+                                onClick={() => handleAddMember(employee.email)}
+                                className="bg-blue-500 flex  hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
+                              >
+                                Add
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+        {isChef && (
+          <CreateTask
+            projectId={projectId}
+            setTasks={setTasks}
+            className="mb-5"
+          />
         )}
-
-        <CreateTask
-          projectId={projectId}
-          setTasks={setTasks}
-          className="mb-5"
-        />
         <ListTasks projectId={projectId} tasks={tasks} setTasks={setTasks} />
-        <AddMemberTask
-          projectId={projectId}
-          tasks={tasks}
-          setTasks={setTasks}
-        />
+        {isChef && (
+          <AddMemberTask
+            projectId={projectId}
+            tasks={tasks}
+            setTasks={setTasks}
+          />
+        )}
       </div>
     </DndProvider>
   );

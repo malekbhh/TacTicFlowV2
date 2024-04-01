@@ -9,6 +9,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Api\MembershipController;
 use App\Http\Controllers\Api\TaskMembershipController;
+use App\Http\Controllers\Api\AuthorizedAccessController;
 
 use App\Http\Controllers\EmployeeController;
 
@@ -39,6 +40,8 @@ Route::post('/taskmemberships1', [TaskMembershipController::class, 'getUserTaskM
 Route::get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('/check-chef-permissions', [AuthorizedAccessController::class, 'checkChefPermissions']);
+
     // Routes pour les projets
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::post('/projects', [ProjectController::class, 'store']);

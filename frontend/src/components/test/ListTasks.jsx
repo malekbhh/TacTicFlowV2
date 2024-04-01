@@ -122,6 +122,7 @@ const Section = ({
         {
           taskId: item.id,
           userId: authenticatedUserId,
+          projectId: projectId,
         }
       );
 

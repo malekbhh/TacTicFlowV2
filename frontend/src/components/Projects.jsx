@@ -65,15 +65,6 @@ const Projects = () => {
 
   return (
     <div className="container h-screen mx-auto pt-11 p-8  text-white">
-      <div className="w-80 mb-2">
-        {showAlert && (
-          <Alert
-            type={alertType}
-            message={alertMessage}
-            onClose={() => setShowAlert(false)}
-          />
-        )}
-      </div>
       <h3 className="dark:text-gray-300 text-gray-600 font-semibold mx-4 mb-8">
         Projects
       </h3>

@@ -9,7 +9,7 @@ use App\Models\User;
 
 class TaskMembershipController extends Controller
 {
-    public function create(Request $request)
+       public function create(Request $request)
     {
         // Validation des données de la requête
         $request->validate([
@@ -27,18 +27,30 @@ class TaskMembershipController extends Controller
                 return response()->json(['error' => 'User not found'], 404);
             }
 
-            // Création d'une nouvelle entrée dans la table taskmemberships
-            TaskMembership::create([
-                'user_id' => $user->id,
-                'project_id' => $request->projectId,
-                'task_id' => $request->taskId,
-            ]);
+            // Vérifiez si l'association entre l'utilisateur et la tâche existe déjà
+            $existingMembership = TaskMembership::where('user_id', $user->id)
+                ->where('task_id', $request->taskId)
+                ->exists();
 
-            return response()->json(['message' => 'Task membership created successfully'], 201);
+            if (!$existingMembership) {
+                // Création d'une nouvelle entrée dans la table taskmemberships
+                TaskMembership::create([
+                    'user_id' => $user->id,
+                    'project_id' => $request->projectId,
+                    'task_id' => $request->taskId,
+                ]);
+
+                return response()->json(['message' => 'Task membership created successfully'], 201);
+            } else {
+                return response()->json(['message' => 'Member already added to task'], 200);
+            }
+
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to create task membership: ' . $e->getMessage()], 500);
         }
     }
+
+
     public function getUserTaskMemberships(Request $request) {
         try {
             // Récupérer l'utilisateur authentifié

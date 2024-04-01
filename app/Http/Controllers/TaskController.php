@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator; 
+use App\Models\TaskMembership;
+
 class TaskController extends Controller
 {
   public function getTaskDetails($taskId) {
@@ -59,6 +61,13 @@ public function createTask(Request $request, $projectId) {
       $task->due_date = $request->dueDate; // Assurez-vous que le nom du champ correspond à celui dans votre modèle Task
       $task->save();
   
+
+      TaskMembership::create([
+        'user_id' => auth()->id(), // ou $request->user()->id si vous utilisez un middleware d'authentification
+        'task_id' => $task->id,
+        'project_id' => $projectId,
+    ]);
+    
       return response()->json($task, 201);
   } catch (\Exception $e) {
       return response()->json(['error' => 'Failed to create task.'], 500);

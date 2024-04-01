@@ -68,9 +68,16 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
         projectId: projectId,
       };
 
-      await axiosClient.post("/taskmemberships", taskMembershipData);
+      const response = await axiosClient.post(
+        "/taskmemberships",
+        taskMembershipData
+      );
 
-      toast.success("Member added to task successfully");
+      if (response.status === 201) {
+        toast.success("Member added to task successfully");
+      } else if (response.status === 200) {
+        toast.error("Member already added");
+      }
     } catch (error) {
       console.error("Failed to add member to task:", error);
       toast.error("Failed to add member to task. Please try again.");
