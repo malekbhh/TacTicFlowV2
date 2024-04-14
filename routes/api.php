@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ChatController;
+
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Api\MembershipController;
 use App\Http\Controllers\Api\TaskMembershipController;
@@ -50,10 +52,15 @@ Route::post('/check-chef-permissions', [AuthorizedAccessController::class, 'chec
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
     Route::get('/projects/{idOrProject}', [ProjectController::class, 'showProject']);
     Route::post('/memberships', [MembershipController::class, 'store']);
-        
+    Route::get('/user1/{id}', [UserController::class, 'getUserById']);
+
     Route::get('/user1', [UserController::class, 'getUser']);
     Route::post('/user/avatar', [UserController::class, 'updatePhoto']);
 
+    Route::get('/chat/{id}', [ChatController::class, 'selectUser'])->name('chat.user');
+    Route::post('/send/message', [ChatController::class, 'sendMessage'])->name('send.message');
+    Route::get('/chat-users', [UserController::class, 'getChatUsers'])->name('chat-user-list');
+    
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::get('/users', [UserController::class, 'index']);
     Route::delete('/usersAccount/{user}', [UserController::class, 'destroyUsers']);
@@ -67,11 +74,14 @@ Route::post('/check-chef-permissions', [AuthorizedAccessController::class, 'chec
         // Endpoint pour récupérer les employés associés à un projet spécifique
         Route::get('/employees', [EmployeeController::class, 'index']);
         Route::get('/{projectId}/tasks', [TaskController::class, 'index']);
-
-
+        Route::get('/chat/{id}', [ChatController::class, 'selectUser'])->name('chat.user');
+        Route::post('/send/message', [ChatController::class, 'sendMessage'])->name('send.message');
+        Route::get('/user-messages/{userId}', [ChatController::class, 'getUserMessages']);
+        
     // Route de déconnexion
     Route::post('/logout', [AuthController::class, 'logout']);
 });
+
 
 // Routes publiques (non authentifiées)
 Route::post('/signup', [AuthController::class, 'signup']);

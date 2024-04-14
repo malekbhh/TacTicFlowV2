@@ -3,11 +3,17 @@ import toast from "react-hot-toast";
 import { useDrag, useDrop } from "react-dnd";
 import axiosClient from "../../axios-client";
 import plus from "./plus.png";
-function ListTasks({ projectId, tasks, setTasks }) {
+import bin from "./bin.png";
+import edittask from "./edittask.png";
+import CreateTask from "./CreateTask";
+import AddMemberTask from "../AddMemberTask";
+function ListTasks({ projectId, tasks, setTasks, isChef }) {
   const [todos, setTodos] = useState([]);
   const [doings, setDoings] = useState([]);
   const [dones, setDones] = useState([]);
   const [closeds, setCloseds] = useState([]);
+  const [editTask, setEditTask] = useState(false);
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -47,7 +53,9 @@ function ListTasks({ projectId, tasks, setTasks }) {
           doings={doings}
           dones={dones}
           closeds={closeds}
+          setEditTask={setEditTask}
           projectId={projectId}
+          isChef={isChef}
         />
       ))}
     </div>
@@ -64,6 +72,8 @@ const Section = ({
   dones,
   closeds,
   projectId,
+  isChef,
+  setEditTask,
 }) => {
   const fetchTasks = async () => {
     try {
@@ -73,13 +83,13 @@ const Section = ({
       console.error("Error fetching tasks:", error);
     }
   };
+
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "task",
     drop: async (item) => {
       try {
         // Attendre que canDrop termine avant de continuer
         const authorized = await canDrop(item);
-
         if (authorized) {
           await axiosClient.post(`/tasks/${item.id}/status`, { status });
           setTasks((prevTasks) =>
@@ -152,7 +162,6 @@ const Section = ({
     bg = "bg-red-500";
     tasksToMap = closeds;
   }
-
   const addItemToSection = (id) => {
     setTasks((prev) => {
       const mTasks = prev.map((t) => {
@@ -167,23 +176,42 @@ const Section = ({
   return (
     <div
       ref={drop}
-      className={` bg-white bg-opacity-30 w-60 min-h-40 h-fit  dark:bg-black dark:bg-opacity-30 rounded-lg p-2 ${
+      className={` bg-white w-60 min-h-40 h-fit flex flex-col justify-between  gap-4  dark:bg-black dark:bg-opacity-30 rounded-lg p-2 ${
         isOver ? "bg-opacity-30" : "bg-opacity-70"
       }`}
     >
       {" "}
-      <Header text={text} bg={bg} count={tasksToMap.length} />{" "}
-      {tasksToMap.length > 0 &&
-        tasksToMap.map((task) => (
-          <Task key={task.id} task={task} tasks={tasks} setTasks={setTasks} />
-        ))}
+      <Header
+        text={text}
+        bg={bg}
+        setEditTask={setEditTask}
+        count={tasksToMap.length}
+      />{" "}
+      <div className="max-h-[310px] flex flex-col gap-2 p-1 overflow-y-scroll">
+        {tasksToMap.length > 0 &&
+          tasksToMap.map((task) => (
+            <Task
+              isChef={isChef}
+              key={task.id}
+              task={task}
+              tasks={tasks}
+              setTasks={setTasks}
+              setEditTask={setEditTask}
+            />
+          ))}{" "}
+      </div>
+      {tasksToMap === todos && isChef && (
+        <div className="flex  w-full justify-center items-center  ">
+          <CreateTask projectId={projectId} setTasks={setTasks} />
+        </div>
+      )}
     </div>
   );
 };
-const Header = ({ text, bg, count }) => {
+const Header = ({ text, bg, setEditTask, count }) => {
   return (
     <div
-      className={`${bg} flex items-center h-12 pl-4 rounded-md uppercase text-sm text-white`}
+      className={`${bg} flex items-center h-12 pl-4 rounded-xl uppercase text-sm text-white`}
     >
       {text}
       <div className="ml-2 bg-white w-5 h-5 text-black rounded-full flex items-center justify-center">
@@ -192,7 +220,7 @@ const Header = ({ text, bg, count }) => {
     </div>
   );
 };
-const Task = ({ task, tasks, setTasks }) => {
+const Task = ({ task, tasks, setEditTask, setTasks, isChef }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
@@ -217,11 +245,10 @@ const Task = ({ task, tasks, setTasks }) => {
       toast.error("Error removing task. Please try again.");
     }
   };
-
   return (
     <div
       ref={drag}
-      className={`relative p-4 mt-8 shadow-md dark:shadow-slate-400 dark:shadow-sm rounded-md cursor-grab ${
+      className={`relative p-4  bg-white  dark:bg-gray-900 shadow-md dark:shadow-gray-950 dark:shadow-sm rounded-md cursor-grab ${
         isDragging ? "opacity-25" : " opacity-100"
       }`}
     >
@@ -229,25 +256,22 @@ const Task = ({ task, tasks, setTasks }) => {
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {task.due_date}
       </p>{" "}
-      <button
-        className="absolute bottom-1 right-1 text-slate-400 "
-        onClick={() => handleremove(task.id)}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
+      {isChef && (
+        <button
+          className="absolute top-1 right-1 text-slate-400 "
+          onClick={() => setEditTask(true)}
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-          />
-        </svg>
-      </button>
+          <img className="h-4 m-2" src={edittask} alt="icon" />
+        </button>
+      )}
+      {isChef && (
+        <button
+          className="absolute bottom-1 right-1 text-slate-400 "
+          onClick={() => handleremove(task.id)}
+        >
+          <img className="h-4 m-2" src={bin} alt="icon" />
+        </button>
+      )}
     </div>
   );
 };

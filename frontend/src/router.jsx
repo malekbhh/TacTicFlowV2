@@ -17,6 +17,7 @@ import FormAccessSignUp from "./components/FormAccessSignUp.jsx";
 import Dashboardd1 from "./views/Dashboardd1.jsx";
 import ProjectDetails from "./components/ProjectDetails.jsx";
 import Profile from "./components/Profile.jsx";
+import Messanger from "./Pages/Chat/Messanger.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -29,6 +30,16 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/chat",
+        element: <Messanger />,
+        children: [
+          {
+            path: ":id",
+            element: <Messanger />,
+          },
+        ],
       },
       {
         path: "/projects",

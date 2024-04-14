@@ -2,69 +2,7 @@
 // bg-[#212177]
 // function FooterHome() {
 //   return (
-//     <footer className=" py-14  flex flex-wrap flex-row items-start justify-around  text-white ">
-//       <div className="bloc1 flex flex-col ">
-//         <div className="w-[379px] flex flex-col items-start justify-start   ">
-//           <div className="w-[295px] flex flex-col items-end justify-start gap-[7px_0px]">
-//             <div className="flex flex-row items-end justify-start gap-[0px_6px]">
-//               <img
-//                 className="h-[77px] w-[65px] pt-3 object-cover"
-//                 alt="Logo"
-//                 src="/imageremovebgpreview-81-1@2x.png"
-//               />
-//               <h3 className=" tracking-[0.15em] font-bold text-4xl  mq750:text-10xl mq450:text-3xl">
-//                 acticFlow
-//               </h3>
-//             </div>
-//             <div className=" tracking-[0.15em] px-4 font-semibold flex flex-row items-start justify-start py-0  text-base text-white">
-//               <span className="mr-1">Created By </span>
-//               <span className="text-[#FFC107] "> TAC-TIC</span>
-//             </div>
-//           </div>
-//         </div>
-//         <div className="w-[350px]  tracking-[0.03em]  flex items-start justify-start  pl-[26px] box-border max-w-full text-base text-white ">
-//           <p className="mt-6">
-//             A group of companies, specialized in the field of software
-//             engineering, computer networks and telecommunications. TAC-TIC has
-//             today become a subsidiary of the New Ways Group, a group of
-//             companies, each specialized in a specific field.
-//           </p>
-//         </div>
-//       </div>
-//       <div className="bloc2 flex flex-col pt-10 items-start justify-center">
-//         <div className="flex flex-col items-center justify-start gap-[33px_0px]">
-//           <b className="tracking-[0.15em] font-bold text-2xl  ">Contact</b>
-//           <div className=" flex flex-col items-start justify-start gap-[16px_0px] text-base">
-//             <div className="flex flex-row items-start justify-start gap-[0px_28px]">
-//               <img
-//                 className="h-[32.1px] w-[29.3px] "
-//                 alt=""
-//                 src="/vector.svg"
-//               />
-//               <div className=" tracking-[0.15em] items-start justify-start  font-medium pt-[7px]  ">
-//                 <p>+216 36 365 558</p>
-//               </div>
-//             </div>
-//             <div className="self-stretch flex flex-row items-start justify-start gap-[0px_18px]">
-//               <img
-//                 className="h-10 w-10  overflow-hidden "
-//                 alt=""
-//                 src="/email.svg"
-//               />
-//               <p className="tracking-[0.15em] pt-2 font-medium [margin-block-start:0] [margin-block-end:10px]">
-//                 contact@tac-tic.net
-//               </p>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//       <div className="bloc3 flex flex-col pt-10 items-center justify-start gap-[59px_0px]">
-//         <b className="tracking-[0.15em] text-lg ">Stay Informed</b>
 //
-//           </div>
-//         </div>
-//       </div>
-//     </footer>
 //   );
 // }
 

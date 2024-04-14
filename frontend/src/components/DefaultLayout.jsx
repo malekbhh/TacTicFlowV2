@@ -2,12 +2,21 @@ import { React, useState } from "react";
 import { Navigate, Outlet, Link } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 import axiosClient from "../axios-client.js";
+import Dropdown from "./Dropdown.jsx";
 import { useEffect } from "react";
+import { MessageOutlined } from "@ant-design/icons";
 import AddEditBoardModal from "../modals/AddEditBoardModal.jsx";
 import HeaderDropdown from "./HeaderDropdown.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faTasks } from "@fortawesome/free-solid-svg-icons";
+import plus1 from "../assets/plus1.png";
+import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+} from "@fortawesome/free-solid-svg-icons";
+import plus from "../assets/plus1.png";
+
 const DefaultLayout = () => {
   const { user, token, setUser, setToken } = useStateContext();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -24,6 +33,7 @@ const DefaultLayout = () => {
           setUser(data);
           axiosClient.get("/user1").then(({ data }) => {
             setUser(data);
+            console.log(data);
           });
         }
       } catch (error) {
@@ -38,21 +48,54 @@ const DefaultLayout = () => {
     setDropdownOpen(!isDropdownOpen);
   };
 
-  const onLogout = (ev) => {
+  const onLogout = async (ev) => {
     ev.preventDefault();
 
-    axiosClient.post("/logout").then(() => {
+    try {
+      await axiosClient.post("/logout");
       setUser({});
       setToken(null);
-    });
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Gérer l'erreur de déconnexion ici
+      // Par exemple, afficher un message à l'utilisateur
+    }
   };
 
   if (!token || !user) {
     return <Navigate to="/home" />;
   }
+  const [isOpen, setIsOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className="flex h-screen  bg-gradient-light   dark:bg-gradient-dark">
-      <aside className="w-64 bg-white top-1  bg-opacity-30 my-3 left-3 fixed rounded-2xl h-[95%] pt-4  pl-1  transition-transform  -translate-x-full  sm:translate-x-0  dark:bg-black dark:bg-opacity-30 ">
+    <div className="flex bg-gradient-light h-fit  dark:bg-gradient-dark w-fit ">
+      <aside
+        className={`w-60 bg-white  bg-opacity-30 top-2 left-2 absolute rounded-2xl z-40 h-[98%]
+  pt-4  pl-1
+          transition-transform
+          -translate-x-full
+         
+          
+${isOpen ? "sm:translate-x-0" : ""}
+           dark:bg-black dark:bg-opacity-30 
+           
+        `}
+      >
+        {" "}
+        <button
+          className="absolute top-20 -right-2 rounded-full bg-white bg-opacity-50 px-1 "
+          onClick={toggleSidebar}
+        >
+          <FontAwesomeIcon
+            className="text-gray-500"
+            icon={isOpen ? faAngleDoubleLeft : faAngleDoubleRight}
+          />
+        </button>
         <div className=" px-3    ">
           <div className="flex items-start justify-start  pb-4    ">
             <a href="https://tac-tic.net/" className="flex pb-4 items-center ">
@@ -155,6 +198,22 @@ const DefaultLayout = () => {
             </li>
 
             <li>
+              <div
+                href="#"
+                className="logo flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
+              >
+                {" "}
+                <Link to="/chat">
+                  <MessageOutlined className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+
+                  <span className="flex-1 dark:hover:text-white  ms-3 dark:text-gray-200  text-gray-700 hover:text-black whitespace-nowrap">
+                    Messenger
+                  </span>
+                </Link>
+              </div>
+            </li>
+
+            <li>
               <a
                 href="#"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
@@ -175,7 +234,7 @@ const DefaultLayout = () => {
                   />
                 </svg>
                 <button onClick={onLogout}>
-                  <span className="flex-1 ms-3 whitespace-nowrap">
+                  <span className="flex-1 dark:hover:text-white  ms-3 dark:text-gray-200  text-gray-700 hover:text-black whitespace-nowrap">
                     Sign Out
                   </span>
                 </button>
@@ -192,16 +251,8 @@ const DefaultLayout = () => {
           </ul>
         </div>
       </aside>
-      <nav className="fixed pl-20  top-6 bg-opacity-70 flex items-start justify-between   rounded-[25px] right-3  ">
-        {/* search bar */}
-        <div className=" flex mt-2  items-center  opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
-          {/* <input
-            type="text"
-            className="bg-transparent w-80 focus:outline-none text-white "
-          />
-          <img src={search} alt="search icon" className="h-4 text-slate-500" /> */}
-        </div>
 
+      <nav className="fixed top-4 bg-opacity-70 flex items-start justify-end   rounded-[25px] z-50 right-0  ">
         <div className="px-3 py-1  lg:px-5 lg:pl-3">
           <div className="flex items-center justify-end">
             {/* right side  */}
@@ -215,15 +266,18 @@ const DefaultLayout = () => {
                     setBoardModalOpen((state) => !state);
                   }}
                 >
-                  +Add New Board
+                  <div className="flex justify-center items-center gap-2">
+                    <img className="h-4" src={plus1} alt="icon" />
+                    <p>Add New Board</p>
+                  </div>
                 </button>
                 <button
-                  className="button p-1 px-3 md:hidden"
+                  className="button px-[9px] py-[9px] text-white bg-midnightblue rounded-full  md:hidden"
                   onClick={() => {
-                    setOpenAddEditTask((state) => !state);
+                    setBoardModalOpen((state) => !state);
                   }}
                 >
-                  +
+                  <img className="h-5" src={plus} alt="icon" />
                 </button>
               </div>
 
@@ -301,12 +355,13 @@ const DefaultLayout = () => {
         </div>
       </nav>
 
-      <div className="mt-20 sm:ml-64  w-[100%] mr-3 ">
+      <div
+        className={`mt-20    
+      ${isOpen ? "sm:ml-60" : "sm:ml-20"}
+      mr-3`}
+      >
         <div className=" ">
-          <div
-            className="pl-11 flex items-start h-screen
-           justify-center pt-6 rounded   "
-          >
+          <div className="pl-11 h-screen w-screen flex items-start   rounded  ">
             {boardModalOpen && (
               <AddEditBoardModal
                 type={boardType}
@@ -314,7 +369,7 @@ const DefaultLayout = () => {
               />
             )}
 
-            <Outlet />
+            <Outlet className="relative" />
           </div>
         </div>
       </div>

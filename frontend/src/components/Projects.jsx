@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import bin from "../assets/bin.png";
 import Alert from "./Alert";
 import toast, { Toaster } from "react-hot-toast";
-
+import search from "../assets/search.png";
 import { Link } from "react-router-dom";
 const Projects = () => {
   const [projects, setProjects] = useState([]);
@@ -25,9 +25,6 @@ const Projects = () => {
       setLoadProjectsError(null); // Clear any previous errors
     } catch (error) {
       console.error("Erreur lors du chargement des projets :", error);
-      setLoadProjectsError(
-        "An error occurred while loading projects. Please try again later."
-      );
     } finally {
       setIsLoadingProjects(false);
     }
@@ -64,7 +61,24 @@ const Projects = () => {
   };
 
   return (
-    <div className="container h-screen mx-auto pt-11 p-8  text-white">
+    <div className="container h-screen   pt-11 p-8  text-white">
+      {/* search bar */}
+      <div className=" fixed top-6 flex mt-2  items-center border-2 opacity-70 justify-between px-2 py-1 rounded-2xl w-80 gap-4">
+        <input
+          type="text"
+          className="bg-transparent w-80 focus:outline-none text-white "
+        />
+        <img src={search} alt="search icon" className="h-4 text-slate-500" />
+      </div>
+      <div className="w-80 mb-2">
+        {showAlert && (
+          <Alert
+            type={alertType}
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
+        )}
+      </div>
       <h3 className="dark:text-gray-300 text-gray-600 font-semibold mx-4 mb-8">
         Projects
       </h3>

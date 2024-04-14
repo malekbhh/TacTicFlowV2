@@ -9,45 +9,53 @@ import FeatureCard from "../components/FeatureCard";
 
 function Home() {
   return (
-    <div className="flex flex-col">
-      <NavbarHome className="shadow-md" />
-      <div className="flex  mb-16 flex-col md:flex-row justify-around  ml-4 items-center">
-        <div className="-translate-y-8 mr-12">
+    <div className="flex flex-col min-h-screen ">
+      {" "}
+      <NavbarHome className="shadow-md bg-white" />
+      <div className="flex   flex-col md:flex-row justify-around items-center">
+        <section class="">
+          <div class="text-start flex flex-col items-start justify-center py-20 md:py-40">
+            <h1 class="text-5xl font-bold leading-tight text-start text-white">
+              Empower Your Projects
+            </h1>
+            <p class="text-3xl font-medium mt-4 text-start text-white">
+              with <span class="text-5xl font-bold text-white">TacticFlow</span>
+            </p>
+            <p class="text-xl mt-4 text-start text-gray-300">
+              Organize, collaborate, and track your projects with ease.
+            </p>
+            <div class="flex justify-center mt-8">
+              <div class="flex flex-row">
+                <input
+                  type="email"
+                  class="border border-gray-300 rounded-3xl pr-11 px-3 py-2 mr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+                  placeholder="Enter your email"
+                  required
+                />
+                <button
+                  type="button"
+                  class="text-center text-white bg-gradient-to-r from-indigo-500 to-indigo-700
+      hover:from-indigo-600 hover:to-indigo-800
+      hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+      font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out animate-pulse
+        transform
+ hover:scale-105"
+                >
+                  Sign Up <i class="fa fa-user-plus" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div className="w-5/12">
           {" "}
           <img
-            className="h-auto md:ml-6  w-full md:w-[800px] mt-5 md:mt-0"
+            className="mt-11"
             alt="image"
-            src="/img2.png"
+            src="/clip-path-group@2x.png"
           />{" "}
-        </div>
-        <div className="text-white md:w-1/2 px-8 py-16 flex flex-col justify-center">
-          <h1 className="text-4xl font-bold leading-tight">
-            Empower Your Projects
-          </h1>
-          <p className="text-2xl font-medium mt-4">
-            with{" "}
-            <span className="text-4xl font-bold text-indigo-400">
-              TacticFlow
-            </span>
-          </p>
-          <p className="text-xl mt-4 text-gray-200">
-            Organize, collaborate, and track your projects with ease.
-          </p>
-          <div>
-            <button className="bg-white mr-4   text-indigo-500 hover:text-white  hover:shadow-lg  ease-in-ou hover:bg-indigo-700 font-bold py-2 mt-6 px-4 rounded-full transition duration-300 focus:ring-4 focus:ring-indigo-300 focus:outline-none">
-              Boost Your Project Success{" "}
-            </button>{" "}
-            <Link to="/formAccess">
-              <FontAwesomeIcon icon={faArrowRight} ml-1 />
-              {/* Replace with your desired icon */}
-              <button className="bg-indigo-500 ml-2    hover:shadow-lg  ease-in-ou hover:bg-indigo-700 text-white font-bold py-2 mt-6 px-4 rounded-full transition duration-300 focus:ring-4 focus:ring-indigo-300 focus:outline-none">
-                Get Started
-              </button>
-            </Link>
-          </div>
-        </div>
+        </div>{" "}
       </div>
-
       <div className="features mb-64 flex flex-wrap justify-center items-center mt-40">
         <FeatureCard
           title="Project Organization Hub"
@@ -70,7 +78,6 @@ function Home() {
           image="/network-1@2x.png" // Replace with the path to your image
         />
       </div>
-
       <FooterHome />
     </div>
   );

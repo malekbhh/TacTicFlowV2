@@ -35,6 +35,7 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'departement'=>$data['departement'],
             'role' => $authorizedUser->role
         ]);
 
@@ -65,12 +66,19 @@ class AuthController extends Controller
     
     public function logout(Request $request)
     {
-        /** @var \App\Models\User $user */
-        $user = $request->user();
-        $user->currentAccessToken()->delete();
-        return response('', 204);
+        try {
+            /** @var \App\Models\User $user */
+            $user = $request->user();
+            $user->currentAccessToken()->delete();
+            return response('', 204);
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Logout error: ' . $e->getMessage());
+            // Return a response with error message
+            return response()->json(['error' => 'Logout failed'], 500);
+        }
     }
-
+    
 
   
     public function handleGoogleCallback(Request $request)

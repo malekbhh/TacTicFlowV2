@@ -15,15 +15,20 @@ function NavbarHome() {
             </h3>
           </a>
           <div class="flex md:order-2   space-x-3 md:space-x-0 rtl:space-x-reverse">
-            <div className="button-container flex flex-col md:flex-row items-center space-y-4 md:space-y-0">
+            <div class="button-container flex flex-col md:flex-row items-center space-y-4 md:space-y-0">
               <Link to="/login">
-                <button className="login-btn translate-x-7 bg-gradient-to-r from-red-500 to-red-700 py-2.5 px-6 rounded-full text-white font-medium shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+                <button
+                  class="
+      bg-gradient-to-r from-indigo-500 to-indigo-700
+      py-2.5 px-6 rounded-full
+      text-white font-medium shadow-md
+      hover:bg-indigo-800 hover:shadow-lg
+      transition duration-300 ease-in-out
+      transform hover:scale-105
+      hover:text-gray-200
+    "
+                >
                   Login
-                </button>
-              </Link>
-              <Link to="/signup">
-                <button className="signup-btn bg-gradient-to-r  text-red-500 font-medium hover:bg-red-100 transition duration-300 ease-in-out border  border-red-500 py-3 px-8 rounded-r-full ">
-                  Signup
                 </button>
               </Link>
             </div>

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
 import { BsPlus } from "react-icons/bs";
-
+import edittask from "../assets/edittask.png";
 function AddMemberTask({ projectId, tasks, setTasks }) {
   const [showTable, setShowTable] = useState(false);
   const [members, setMembers] = useState([]);
@@ -68,16 +68,9 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
         projectId: projectId,
       };
 
-      const response = await axiosClient.post(
-        "/taskmemberships",
-        taskMembershipData
-      );
+      await axiosClient.post("/taskmemberships", taskMembershipData);
 
-      if (response.status === 201) {
-        toast.success("Member added to task successfully");
-      } else if (response.status === 200) {
-        toast.error("Member already added");
-      }
+      toast.success("Member added to task successfully");
     } catch (error) {
       console.error("Failed to add member to task:", error);
       toast.error("Failed to add member to task. Please try again.");
@@ -85,63 +78,78 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
   };
 
   return (
-    <div className="">
-      <BsPlus
-        className="w-9 h-9 translate-y-2 cursor-pointer dark:text-white transform hover:scale-110 transition duration-300 ease-in-out"
+    <div className="absolute top-40 right-11">
+      <button
         onClick={toggleTable}
-      />
+        className="bg-white   flex p-2 rounded-full gap-2 dark:bg-gray-800"
+      >
+        <img className="h-6" src={edittask} alt="edit icon " />
+        <p className="text-[#9CA3AF]">Tasks</p>
+      </button>
       {showTable && (
-        <div className="overflow-y-scroll mb-11 mx-0 rounded-lg shadow-md bg-white dark:bg-opacity-30 bg-opacity-30 dark:bg-slate-900 p-4">
-          <table className="mb-11 mx-0">
-            <thead className="table-header">
-              <tr>
-                <th className="px-4 py-2 text-midnightblue dark:text-white">
-                  Name
-                </th>
-                <th className="px-4 py-2 text-midnightblue dark:text-white">
-                  Email
-                </th>
-                <th className="px-4 py-2 text-midnightblue dark:text-white">
-                  Task
-                </th>
-                <th className="px-4 py-2 text-midnightblue dark:text-white">
-                  Add member
-                </th>
-              </tr>
-            </thead>
-            <tbody className="table-body">
-              {members.map((member) => (
-                <tr key={member.id}>
-                  <td className="px-4 py-2">{member.name}</td>
-                  <td className="px-4 py-2">{member.email}</td>
-                  <td className="px-4 py-2">
-                    <select
-                      value={selectedTasks[member.id] || ""}
-                      onChange={(e) =>
-                        handleTaskChange(member.id, e.target.value)
-                      }
-                      className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
-                    >
-                      <option value="">Select a task</option>
-                      {tasks.map((task) => (
-                        <option key={task.id} value={task.id}>
-                          {task.title}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-2">
-                    <button
-                      onClick={() => handleAddMember(member.email)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                      Add member to task
-                    </button>
-                  </td>
+        <div
+          onClick={(e) => {
+            if (e.target !== e.currentTarget) {
+              return;
+            }
+            setShowTable(false);
+          }}
+          className="fixed right-0  left-0 top-0 bottom-0 px-2 py-4 overflow-scroll z-50 justify-center items-center flex bg-[#00000080] scrollbar-hide"
+        >
+          <div
+            className={` flex justify-center w-fit items-start table-container mx-0  rounded-lg h-fit shadow-md bg-white    dark:bg-slate-900 p-6 `}
+          >
+            <table className="table-container ">
+              <thead className="table-header">
+                <tr>
+                  <th className="px-4 py-2 text-midnightblue dark:text-white">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 text-midnightblue dark:text-white">
+                    Email
+                  </th>
+                  <th className="px-4 py-2 text-midnightblue dark:text-white">
+                    Task
+                  </th>
+                  <th className="px-4 py-2 text-midnightblue dark:text-white">
+                    Add member
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="table-body">
+                {members.map((member) => (
+                  <tr key={member.id}>
+                    <td className="px-4 py-2">{member.name}</td>
+                    <td className="px-4 py-2">{member.email}</td>
+                    <td className="px-4 py-2">
+                      <select
+                        value={selectedTasks[member.id] || ""}
+                        onChange={(e) =>
+                          handleTaskChange(member.id, e.target.value)
+                        }
+                        className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
+                      >
+                        <option value="">Select a task</option>
+                        {tasks.map((task) => (
+                          <option key={task.id} value={task.id}>
+                            {task.title}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => handleAddMember(member.email)}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      >
+                        Assign
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

@@ -10,8 +10,9 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+   
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'departement',
+        'name', 'email', 'password', 'role', 'departement', 'avatar',
     ];
 
     protected $hidden = [
@@ -31,4 +32,8 @@ class User extends Authenticatable
    {
        return $this->hasMany(Membership::class);
    }
+   public function message(){
+    $this->hasMany(Message::class);
+}
+
 }

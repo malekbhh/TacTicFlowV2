@@ -165,6 +165,29 @@ public function authorizeUnauthorizedUser(UnauthorizedUser $user)
         ], 500);
     }
 }
+public function getUserById($id)
+{
+    // Récupérer l'utilisateur par son ID
+    $user = User::find($id);
+
+    // Vérifier si l'utilisateur existe
+    if (!$user) {
+        return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+    }
+
+    // Ajouter l'URL de l'avatar à la réponse JSON
+    $avatarUrl = $user->avatar ? asset('storage/avatars/' . $user->avatar) : null;
+    $userData = [
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'avatar' => $avatarUrl,
+    ];
+
+    // Retourner les données de l'utilisateur
+    return response()->json($userData);
+}
+
 public function getUser(Request $request)
 {
     // Récupérer l'utilisateur authentifié
@@ -192,45 +215,56 @@ public function updatePhoto(Request $request)
 {
     // Check for file, access control, and validation
     $validator = Validator::make($request->all(), [
-        'avatar' => 'required|image|mimes:jpeg,png,jpg', // Adjust limits as needed
+        'avatar' => 'sometimes|image|mimes:jpeg,png,jpg', // Adjust limits as needed
     ]);
 
     if ($validator->fails()) {
         return response()->json($validator->errors(), 422);
     }
 
-    if (!$request->hasFile('avatar') || !Auth::check()) {
-        return response()->json(['error' => 'Unauthorized or no avatar provided'], 400);
-    }
-
     // Get the authenticated user
     $user = Auth::user();
 
-    // Get the uploaded file
-    $avatar = $request->file('avatar');
+    // Handle avatar update if provided
+    if ($request->hasFile('avatar')) {
+        // Get the uploaded file
+        $avatar = $request->file('avatar');
 
-    // Generate a unique filename with extension
-    $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
+        // Generate a unique filename with extension
+        $avatarName = Str::uuid() . '.' . $avatar->getClientOriginalExtension();
 
-    // Secure storage with access control (consider private storage)
-    $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
-    $path = $disk->put($avatarName, $avatar->getContent());
+        // Secure storage with access control (consider private storage)
+        $disk = Storage::disk('avatars'); // Create a custom disk for avatars (optional)
+        $path = $disk->put($avatarName, $avatar->getContent());
 
-    if (!$path) {
-        return response()->json(['error' => 'Failed to store avatar'], 500);
+        if (!$path) {
+            return response()->json(['error' => 'Failed to store avatar'], 500);
+        }
+
+        // Update the user's avatar path in the database
+        $user->avatar = $avatarName;
     }
 
-    // Update the user's avatar path in the database
-    $user->avatar = $avatarName;
+    // Update user fields if provided
+    if ($request->filled('name')) {
+        $user->name = $request->input('name');
+    }
+    if ($request->filled('email')) {
+        $user->email = $request->input('email');
+    }
+    if ($request->filled('password')) {
+        $user->password = bcrypt($request->input('password')); // Hash the password for security
+    }
+
+    // Save the user's updates
     $user->save();
 
-    // Return a JSON response with the avatar URL (consider security)
-    $avatarUrl = $disk->url($avatarName); // Use custom disk URL if applicable
-
+    // Return a JSON response with updated user details
     return response()->json([
-        'avatar' => $avatarUrl, // Adjust based on your storage configuration
+        'user' => $user, // Optionally, return updated user details
     ]);
 }
+
 
 public function index1($projectId)
 {
@@ -243,5 +277,8 @@ public function index1($projectId)
     return response()->json($users);
 }
 
-
+public function getChatUsers(){
+    $users= User::where('id','<>',auth()->id())->paginate(50);
+    return $users;
+}
 }

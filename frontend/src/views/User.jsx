@@ -127,7 +127,7 @@ function User() {
   }, []);
 
   return (
-    <div className=" justify-centers w-full h-screen  dark:text-white">
+    <div className=" justify-center   dark:text-white">
       {loading ? (
         <p>Loading user role...</p>
       ) : userRole === "admin" ? (

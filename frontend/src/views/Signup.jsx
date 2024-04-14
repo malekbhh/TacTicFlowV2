@@ -9,14 +9,18 @@ import { useEffect } from "react";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 function Signup() {
   const nameRef = createRef();
+  const departmentRef = createRef();
   const emailRef = createRef();
   const passwordRef = createRef();
   const passwordConfirmationRef = createRef();
   const { setUser, setToken } = useStateContext();
+
   const [errors, setErrors] = useState(null);
   const [value, setValue] = useState("");
   const [redirect, setRedirect] = useState(false);
-
+  const handleDepartmentChange = (e) => {
+    setValue(e.target.value);
+  };
   const handleGoogleLogin = async () => {
     const auth = getAuth();
     const googleProvider = new GoogleAuthProvider();
@@ -53,14 +57,13 @@ function Signup() {
   }
   const onSubmit = (ev) => {
     ev.preventDefault();
-
     const payload = {
       name: nameRef.current.value,
       email: emailRef.current.value,
       password: passwordRef.current.value,
+      departement: departmentRef.current.value,
       password_confirmation: passwordConfirmationRef.current.value,
     };
-
     axiosClient
       .post("/signup", payload)
       .then(({ data }) => {
@@ -143,6 +146,23 @@ function Signup() {
               placeholder="Password Confirmation"
               type="password"
             />
+            <select
+              id="department"
+              name="departement"
+              ref={departmentRef}
+              className="text-gray-300 shadow-md shadow-slate-600 bg-transparent rounded-xl px-4 py-3 mt-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+              required
+              value={value}
+              onChange={handleDepartmentChange}
+            >
+              <option value="" disabled>
+                Select department
+              </option>
+              <option value="web">Web</option>
+              <option value="mobile">Mobile</option>
+              <option value="security">Security</option>
+            </select>
+
             {errors && (
               <div className="text-red-700 rounded-lg   flex items-center mt-4">
                 <button

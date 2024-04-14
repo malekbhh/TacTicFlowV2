@@ -2,7 +2,7 @@ import React from "react";
 
 function FeatureCard({ title, description, icon, image }) {
   return (
-    <div className="w-96 rounded-lg p-8 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+    <div className="w-96  rounded-lg p-8 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300">
       <div className="flex justify-center items-center mb-4">
         {image && (
           <img
