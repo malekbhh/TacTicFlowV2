@@ -9,7 +9,17 @@ function UsersAdmin() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const { setNotification } = useStateContext();
-
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Date(dateString).toLocaleString(undefined, options);
+  };
   const fadeAnim = useSpring({
     from: { opacity: 0 },
     to: { opacity: 1 },
@@ -116,8 +126,8 @@ function UsersAdmin() {
                   >
                     <td className="p-4">{u.name}</td>
                     <td className="p-4">{u.email}</td>
-                    <td className="p-4">{u.department}</td>
-                    <td className="p-4">{u.created_at}</td>
+                    <td className="p-4">{u.departement}</td>
+                    <td className="p-4">{formatDate(u.created_at)}</td>
                     <td className="p-4">
                       <button
                         className="btn-delete bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded ml-2"

@@ -5,11 +5,11 @@ import { useStateContext } from "../context/ContextProvider";
 function Profile() {
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const { photoUser, setPhotoUser } = useStateContext();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const { notifications, setNotifications } = useStateContext();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -18,6 +18,7 @@ function Profile() {
         setPhotoPreview(data.avatar);
         setName(data.name);
         setEmail(data.email);
+        setNotifications(["Bienvenue"]);
       } catch (error) {
         console.error("Error fetching user:", error);
       }
@@ -100,7 +101,7 @@ function Profile() {
   };
 
   return (
-    <div className="px-4 h-screen py-2">
+    <div className="px-4 h-screen  py-2">
       <form
         onSubmit={handleFormSubmit}
         className="profile-form w-96 rounded-lg shadow-md overflow-hidden"

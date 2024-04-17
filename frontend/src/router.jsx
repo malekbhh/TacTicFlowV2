@@ -18,6 +18,7 @@ import Dashboardd1 from "./views/Dashboardd1.jsx";
 import ProjectDetails from "./components/ProjectDetails.jsx";
 import Profile from "./components/Profile.jsx";
 import Messanger from "./Pages/Chat/Messanger.jsx";
+import Progress from "./views/Progress/Progress.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <User />,
+      },
+      {
+        path: "/progress",
+        element: <Progress />,
       },
       {
         path: "/profile",

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Api\MembershipController;
@@ -37,6 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('projects/{projectId}/members', [UserController::class, 'index1']);
     Route::get('/tasks/{taskId}', [TaskController::class, 'getTaskDetails']);
 
+
+    Route::get('/tasks/project/{projectId}', [TaskController::class, 'getTasksByProjectUserId']);
+
 Route::post('/taskmemberships', [TaskMembershipController::class, 'create']);
 Route::post('/taskmemberships1', [TaskMembershipController::class, 'getUserTaskMemberships']);
 Route::get('/user', function (Request $request) {
@@ -46,6 +50,8 @@ Route::post('/check-chef-permissions', [AuthorizedAccessController::class, 'chec
 
     // Routes pour les projets
     Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/projectsWithRole', [ProjectController::class, 'showProjectsWithRole']);
+
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::get('/projects/{projectId}', [ProjectController::class, 'show']);
     Route::put('/projects/{project}', [ProjectController::class, 'update']);
@@ -78,6 +84,9 @@ Route::post('/check-chef-permissions', [AuthorizedAccessController::class, 'chec
         Route::post('/send/message', [ChatController::class, 'sendMessage'])->name('send.message');
         Route::get('/user-messages/{userId}', [ChatController::class, 'getUserMessages']);
         
+
+        Route::post('/notifications', [NotificationController::class, 'createNotification']);
+        Route::get('/notifications/{userId}', [NotificationController::class, 'getUserNotifications']);
     // Route de déconnexion
     Route::post('/logout', [AuthController::class, 'logout']);
 });

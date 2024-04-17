@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import { Navigate, Outlet, Link } from "react-router-dom";
+import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../context/ContextProvider";
 import axiosClient from "../axios-client.js";
 import Dropdown from "./Dropdown.jsx";
@@ -8,6 +8,8 @@ import { MessageOutlined } from "@ant-design/icons";
 import AddEditBoardModal from "../modals/AddEditBoardModal.jsx";
 import HeaderDropdown from "./HeaderDropdown.jsx";
 import { useDispatch, useSelector } from "react-redux";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { faFacebookMessenger } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faTasks } from "@fortawesome/free-solid-svg-icons";
 import plus1 from "../assets/plus1.png";
@@ -16,15 +18,23 @@ import {
   faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import plus from "../assets/plus1.png";
-
+import NotificationDialog from "./Notifications/NotificationDialog.jsx";
 const DefaultLayout = () => {
   const { user, token, setUser, setToken } = useStateContext();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [boardModalOpen, setBoardModalOpen] = useState(false);
   const [boardType, setBoardType] = useState("add");
+  const [isNotificationOpen, setNotificationOpen] = useState(false);
+  const location = useLocation();
+
   const boards = useSelector((state) => state.boards);
   const board = boards.find((board) => board.isActive);
+
+  const handleNotificationToggle = () => {
+    setNotificationOpen(!isNotificationOpen);
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -73,18 +83,17 @@ const DefaultLayout = () => {
   };
 
   return (
-    <div className="flex bg-gradient-light h-fit  dark:bg-gradient-dark w-fit ">
+    <div
+      className={`bg-gradient-light dark:bg-gradient-dark h-screen w-full overflow-auto`}
+    >
       <aside
-        className={`w-60 bg-white  bg-opacity-30 top-2 left-2 absolute rounded-2xl z-40 h-[98%]
-  pt-4  pl-1
-          transition-transform
-          -translate-x-full
-         
-          
-${isOpen ? "sm:translate-x-0" : ""}
-           dark:bg-black dark:bg-opacity-30 
-           
-        `}
+        className={` fixed w-56 bg-white  bg-opacity-30 top-2 left-2  rounded-2xl z-40 h-[98%]
+        pt-4  pl-1
+        transition-transform
+        -translate-x-full
+        ${isOpen ? "sm:translate-x-0" : ""}
+        dark:bg-black dark:bg-opacity-30 
+      `}
       >
         {" "}
         <button
@@ -97,90 +106,117 @@ ${isOpen ? "sm:translate-x-0" : ""}
           />
         </button>
         <div className=" px-3    ">
-          <div className="flex items-start justify-start  pb-4    ">
-            <a href="https://tac-tic.net/" className="flex pb-4 items-center ">
-              <img
-                src="/logo2.png"
-                className="h-12 mr-1 md:h-8 lg:h-12"
-                alt="TacTicFlowLogo"
-              />
+          <div className="flex items-start justify-start  pb-2   ">
+            <a href="https://tac-tic.net/" className="flex pb-2 items-center ">
+              <img src="/logo2.png" className="logo h-10 mr-1" />
               <span
-                className={` text-2xl  font-bold font-inherit mt-1 dark:text-white text-[#212177]  ${
-                  typeof window !== "undefined" && window.innerWidth < 600
-                    ? "text-lg"
-                    : ""
-                }`}
+                className="textLogo text-midnightblue dark:text-gray-300 mt-1"
                 style={{
                   letterSpacing: window.innerWidth < 600 ? "2px" : "4px",
                 }}
               >
-                actiwFlow
+                acticflow
               </span>
             </a>
           </div>
-          <ul className="space-y-6 mt-4 ml-4 font-medium">
+          <ul className="space-y-6 text-base mt-4 mx-4 font-medium">
             <li>
-              <Link to="/projects">
-                <a
-                  href="#"
-                  className="logo flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
+              <Link
+                to="/projects"
+                className={`flex text-xs items-center  p-2 rounded-lg group
+                ${
+                  location.pathname === "/projects"
+                    ? "bg-gray-100 dark:bg-indigo-500"
+                    : ""
+                }
+                `}
+              >
+                {" "}
+                <svg
+                  className={`flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 hover:dark:text-white group-hover:text-gray-900 dark:group-hover:text-white
+                 ${
+                   location.pathname === "/projects"
+                     ? " text-gray-900 dark:text-white"
+                     : ""
+                 }
+                 `}
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 18 18"
+                  strokeWidth="2"
+                  clipRule="evenodd" // Change 'clip-rule' to 'clipRule'
+                  fillRule="evenodd" // Change 'fill-rule' to 'fillRule'
+                  strokeLinecap="round" // Change 'stroke-linecap' to 'strokeLinecap'
+                  strokeLinejoin="round"
                 >
-                  {" "}
-                  <svg
-                    className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 18 18"
-                    strokeWidth="2"
-                    clipRule="evenodd" // Change 'clip-rule' to 'clipRule'
-                    fillRule="evenodd" // Change 'fill-rule' to 'fillRule'
-                    strokeLinecap="round" // Change 'stroke-linecap' to 'strokeLinecap'
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
-                  </svg>
-                  <span className="flex-1 ms-3 whitespace-nowrap">
-                    Projects
-                  </span>
-                </a>
+                  <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z" />
+                </svg>
+                <span className="flex-1 ms-3 whitespace-nowrap">Projects</span>
               </Link>
             </li>
 
             <li>
               <Link
                 to="/profile"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
+                className={`flex items-center p-2 text-xs text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group  rounded-lg group
+                ${
+                  location.pathname === "/profile"
+                    ? "bg-gray-100  dark:bg-indigo-500"
+                    : ""
+                }
+                `}
               >
                 <FontAwesomeIcon
                   icon={faUser}
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  className={`flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 hover:dark:text-white group-hover:text-gray-900 dark:group-hover:text-white
+                  ${
+                    location.pathname === "/profile"
+                      ? " text-gray-900 dark:text-white"
+                      : ""
+                  }
+                  `}
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Profil</span>
               </Link>
             </li>
             <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
+              <Link
+                to="/progress"
+                className={`flex items-center p-2 text-xs text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group  rounded-lg group
+                ${
+                  location.pathname === "/progress"
+                    ? "bg-gray-100  dark:bg-indigo-500"
+                    : ""
+                }
+                `}
               >
                 <FontAwesomeIcon
                   icon={faTasks}
-                  className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  className={`flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 hover:dark:text-white group-hover:text-gray-900 dark:group-hover:text-white
+                  ${
+                    location.pathname === "/progress"
+                      ? " text-gray-900 dark:text-white"
+                      : ""
+                  }
+                  `}
                 />
                 <span className="flex-1 ms-3 whitespace-nowrap">Progress</span>
-              </a>
+              </Link>
             </li>
 
             <li>
               <Link
                 to="/user"
-                className="flex items-center p-2 text-gray-900 rounded-lg
-    dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
+                className={`flex items-center p-2 text-xs text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group  rounded-lg group
+    ${location.pathname === "/user" ? "bg-gray-100  dark:bg-indigo-500" : ""}
+    `}
               >
                 {" "}
                 <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  className={`flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 hover:dark:text-white group-hover:text-gray-900 dark:group-hover:text-white
+  ${location.pathname === "/user" ? " text-gray-900 dark:text-white" : ""}
+  `}
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -198,28 +234,40 @@ ${isOpen ? "sm:translate-x-0" : ""}
             </li>
 
             <li>
-              <div
-                href="#"
-                className="logo flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
+              {" "}
+              <Link
+                to="/chat"
+                className={`flex items-center p-2 text-xs text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group  rounded-lg group
+                ${
+                  location.pathname === "/chat"
+                    ? "bg-gray-100  dark:bg-indigo-500"
+                    : ""
+                }
+                `}
               >
-                {" "}
-                <Link to="/chat">
-                  <MessageOutlined className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-
-                  <span className="flex-1 dark:hover:text-white  ms-3 dark:text-gray-200  text-gray-700 hover:text-black whitespace-nowrap">
-                    Messenger
-                  </span>
-                </Link>
-              </div>
+                {/* <MessageOutlined /> */}
+                <FontAwesomeIcon
+                  icon={faFacebookMessenger}
+                  className={`flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 hover:dark:text-white group-hover:text-gray-900 dark:group-hover:text-white
+                  ${
+                    location.pathname === "/chat"
+                      ? " text-gray-900 dark:text-white"
+                      : ""
+                  }
+                  `}
+                />
+                <span className="flex-1 dark:hover:text-white  ms-3 dark:text-gray-200  text-gray-700 hover:text-black whitespace-nowrap">
+                  Messenger
+                </span>
+              </Link>
             </li>
 
             <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group"
-              >
+              <Link className="flex items-center text-xs p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-indigo-500 group">
                 <svg
-                  className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  className={`flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 hover:dark:text-white group-hover:text-gray-900 dark:group-hover:text-white
+  ${location.pathname === "/projects" ? " text-gray-900 dark:text-white" : ""}
+  `}
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -238,7 +286,7 @@ ${isOpen ? "sm:translate-x-0" : ""}
                     Sign Out
                   </span>
                 </button>
-              </a>
+              </Link>
             </li>
             <li>
               <div className="fixed bottom-4 left-0 w-full">
@@ -251,8 +299,7 @@ ${isOpen ? "sm:translate-x-0" : ""}
           </ul>
         </div>
       </aside>
-
-      <nav className="fixed top-4 bg-opacity-70 flex items-start justify-end   rounded-[25px] z-50 right-0  ">
+      <nav className="fixed  top-4 bg-opacity-70 flex items-start justify-end   rounded-[25px] z-50 right-0  ">
         <div className="px-3 py-1  lg:px-5 lg:pl-3">
           <div className="flex items-center justify-end">
             {/* right side  */}
@@ -267,18 +314,34 @@ ${isOpen ? "sm:translate-x-0" : ""}
                   }}
                 >
                   <div className="flex justify-center items-center gap-2">
-                    <img className="h-4" src={plus1} alt="icon" />
-                    <p>Add New Board</p>
+                    <img className="h-3" src={plus1} alt="icon" />
+                    <p className="text-base">Add New Board</p>
                   </div>
                 </button>
+                {/* Icône de notification */}
+
                 <button
-                  className="button px-[9px] py-[9px] text-white bg-midnightblue rounded-full  md:hidden"
+                  className="button px-[9px] py-[9px]  text-white bg-midnightblue rounded-full  md:hidden"
                   onClick={() => {
                     setBoardModalOpen((state) => !state);
                   }}
                 >
-                  <img className="h-5" src={plus} alt="icon" />
+                  <img className="h-4" src={plus} alt="icon" />
                 </button>
+                <div className="relative">
+                  <button
+                    onClick={handleNotificationToggle}
+                    className="  text-midnightblue hover:opacity-80
+        duration-200 button  md:block dark:text-indigo-500  rounded-full  items-center justify-center text-xs"
+                  >
+                    {/* Ici, vous pouvez utiliser une icône FontAwesome ou toute autre icône de votre choix */}
+                    <FontAwesomeIcon className="h-7 sm:h-6 " icon={faBell} />
+                  </button>
+                  <NotificationDialog
+                    isOpen={isNotificationOpen}
+                    onClose={handleNotificationToggle}
+                  />
+                </div>
               </div>
 
               <div className="flex items-center ms-3">
@@ -322,20 +385,20 @@ ${isOpen ? "sm:translate-x-0" : ""}
                   </div>
                   <ul className="py-1">
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/project"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         Projects
-                      </a>
+                      </Link>
                     </li>
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        to="/profil"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         Edit Profil
-                      </a>
+                      </Link>
                     </li>
                     <li>
                       <button onClick={onLogout}>
@@ -354,22 +417,22 @@ ${isOpen ? "sm:translate-x-0" : ""}
           </div>
         </div>
       </nav>
-
       <div
-        className={`mt-20    
+        className={`mt-16
       ${isOpen ? "sm:ml-60" : "sm:ml-20"}
-      mr-3`}
+      `}
       >
         <div className=" ">
-          <div className="pl-11 h-screen w-screen flex items-start   rounded  ">
+          <div className="pl-11   flex items-start   rounded  ">
             {boardModalOpen && (
               <AddEditBoardModal
                 type={boardType}
                 setBoardModalOpen={setBoardModalOpen}
               />
             )}
-
-            <Outlet className="relative" />
+            <main className=" h-full ">
+              <Outlet className="relative " />
+            </main>{" "}
           </div>
         </div>
       </div>

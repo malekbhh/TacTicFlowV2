@@ -212,6 +212,7 @@ const Header = ({ text, bg, setEditTask, count }) => {
   return (
     <div
       className={`${bg} flex items-center h-12 pl-4 rounded-xl uppercase text-sm text-white`}
+      style={{ fontSize: "small" }}
     >
       {text}
       <div className="ml-2 bg-white w-5 h-5 text-black rounded-full flex items-center justify-center">
@@ -252,7 +253,9 @@ const Task = ({ task, tasks, setEditTask, setTasks, isChef }) => {
         isDragging ? "opacity-25" : " opacity-100"
       }`}
     >
-      <p className="text-black dark:text-white ">{task.title}</p>
+      <p className="text-black dark:text-white " style={{ fontSize: "small" }}>
+        {task.title}
+      </p>
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {task.due_date}
       </p>{" "}

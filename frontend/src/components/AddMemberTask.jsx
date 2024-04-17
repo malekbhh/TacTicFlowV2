@@ -6,10 +6,12 @@ import toast, { Toaster } from "react-hot-toast";
 
 import { BsPlus } from "react-icons/bs";
 import edittask from "../assets/edittask.png";
+
 function AddMemberTask({ projectId, tasks, setTasks }) {
   const [showTable, setShowTable] = useState(false);
   const [members, setMembers] = useState([]);
   const [selectedTasks, setSelectedTasks] = useState({});
+  const [selectedTaskTitle, setSelectedTaskTitle] = useState(""); // Ajout du state pour stocker le titre de la tâche sélectionnée
 
   const toggleTable = () => {
     setShowTable(!showTable);
@@ -44,8 +46,9 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
     fetchProjectDetails();
   }, [projectId]);
 
-  const handleTaskChange = (memberId, taskId) => {
+  const handleTaskChange = (memberId, taskId, taskTitle) => {
     setSelectedTasks({ ...selectedTasks, [memberId]: taskId });
+    setSelectedTaskTitle(taskTitle); // Mise à jour du titre de la tâche sélectionnée lors du changement
   };
 
   const handleAddMember = async (memberEmail) => {
@@ -71,6 +74,17 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
       await axiosClient.post("/taskmemberships", taskMembershipData);
 
       toast.success("Member added to task successfully");
+      try {
+        const notificationResponse = await axiosClient.post(`/notifications`, {
+          message: `Member ${member.email} added to task "${selectedTaskTitle} successfully"`, // Utilisation du titre de la tâche sélectionnée ici
+        });
+
+        setTimeout(() => {
+          window.location.reload(); // Recharge la page après 10 secondes
+        }, 2000);
+      } catch (error) {
+        console.error("Error sending project notification:", error);
+      }
     } catch (error) {
       console.error("Failed to add member to task:", error);
       toast.error("Failed to add member to task. Please try again.");
@@ -78,7 +92,7 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
   };
 
   return (
-    <div className="absolute top-40 right-11">
+    <div className="">
       <button
         onClick={toggleTable}
         className="bg-white   flex p-2 rounded-full gap-2 dark:bg-gray-800"
@@ -117,15 +131,21 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
                 </tr>
               </thead>
               <tbody className="table-body">
-                {members.map((member) => (
-                  <tr key={member.id}>
+                {members.map((member, index) => (
+                  <tr key={index}>
+                    {" "}
+                    {/* Utilisation de l'index comme clé */}
                     <td className="px-4 py-2">{member.name}</td>
                     <td className="px-4 py-2">{member.email}</td>
                     <td className="px-4 py-2">
                       <select
                         value={selectedTasks[member.id] || ""}
                         onChange={(e) =>
-                          handleTaskChange(member.id, e.target.value)
+                          handleTaskChange(
+                            member.id,
+                            e.target.value,
+                            e.target.options[e.target.selectedIndex].text
+                          )
                         }
                         className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
                       >
@@ -140,7 +160,7 @@ function AddMemberTask({ projectId, tasks, setTasks }) {
                     <td className="px-4 py-2">
                       <button
                         onClick={() => handleAddMember(member.email)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
                       >
                         Assign
                       </button>

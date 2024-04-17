@@ -22,17 +22,13 @@ use App\Http\Resources\UnAuthorizedUserResource;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
-     */
+   
     public function index()
     {
         return AuthorizedUserResource::collection(AuthorizedUser::query()->orderBy('id')->paginate(10));
     }
-    public function indexUsers()
-    {
+    public function indexUsers(){
+
         return UserResource::collection(User::query()->orderBy('id')->paginate(10));
     }
     public function showUnauth()
@@ -205,6 +201,8 @@ public function getUser(Request $request)
         'name' => $user->name,
         'email' => $user->email,
         'avatar' => $avatarUrl,
+        'departement' => $user->departement,
+
     ];
 
     // Retourner les données de l'utilisateur
@@ -272,9 +270,21 @@ public function index1($projectId)
     $users = User::whereHas('memberships', function($query) use ($projectId) {
         $query->where('project_id', $projectId)
               ->where('user_role', 'member');
-    })->get(['name', 'email']);
+    })->get(['name', 'email', 'avatar','departement',]);
 
-    return response()->json($users);
+    // Ajout de l'URL de l'avatar pour chaque utilisateur
+    $usersWithAvatarUrl = $users->map(function ($user) {
+        $avatarUrl = $user->avatar ? asset('storage/avatars/' . $user->avatar) : null;
+        return [
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $avatarUrl,
+            'departement' => $user->departement,
+
+        ];
+    });
+
+    return response()->json($usersWithAvatarUrl);
 }
 
 public function getChatUsers(){

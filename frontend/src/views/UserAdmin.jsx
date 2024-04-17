@@ -5,7 +5,7 @@ import UnauthorizedUser from "./UserAdmin/UnauthorizedUser.jsx";
 import UsersAdmin from "./UserAdmin/UsersAdmin.jsx";
 function UserAdmin() {
   return (
-    <div className=" flex flex-col   md:p-10   dark:text-white">
+    <div className=" flex flex-col h-full dark:text-white">
       <UnauthorizedUser />
       <AuthorizedUser />
       <UsersAdmin />

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axiosClient from "../axios-client.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 function AddEditBoardModal({ setBoardModalOpen, type }) {
   const [title, setTitle] = useState("");
@@ -16,8 +16,19 @@ function AddEditBoardModal({ setBoardModalOpen, type }) {
       const response = await axiosClient.post(`/projects`, {
         title: title,
         description: description,
-        deadline: deadline ? deadline.toISOString().split("T")[0] : null, // Convertir la date au format YYYY-MM-DD
+        deadline: deadline ? deadline.toISOString().split("T")[0] : null,
       });
+
+      try {
+        const notificationResponse = await axiosClient.post(`/notifications`, {
+          message: `New Project added : ${title}`,
+        });
+        toast.success("Project notification successfully!");
+      } catch (error) {
+        console.error("Error sending project notification:", error);
+        toast.error("Error sending project notification. Please try again.");
+      }
+
       window.location.reload();
       toast.success("Project created successfully!");
     } catch (error) {
@@ -57,9 +68,9 @@ function AddEditBoardModal({ setBoardModalOpen, type }) {
             </label>
             <input
               type="text"
-              name="description"
-              value={description}
+              value={description || ""}
               onChange={(e) => setDescription(e.target.value)}
+              name="description"
               className="bg-transparent outline-none px-4 py-2 rounded-md text-sm border  border-gray-600 focus:outline-[#635fc7] outline-1 ring-0"
             />
           </div>

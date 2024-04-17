@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator; 
 use App\Models\TaskMembership;
+use App\Models\Membership;
 
 class TaskController extends Controller
 {
@@ -33,7 +34,29 @@ class TaskController extends Controller
 
       return response()->json($tasks);
   }
-
+  public function getTasksByProjectUserId($projectId)
+  {
+      try {
+          // Récupérer l'ID de l'utilisateur authentifié
+          $userId = auth()->id();
+    
+          // Récupérer les tâches associées au projet spécifié par son ID,
+          // à l'utilisateur authentifié, en utilisant la table de liaison task_memberships
+          $tasks = Task::where('project_id', $projectId)
+                       ->whereHas('taskMemberships', function($query) use ($userId, $projectId) {
+                           $query->where('user_id', $userId)
+                                 ->where('project_id', $projectId);
+                       })
+                       ->get();
+    
+          return response()->json($tasks);
+      } catch (\Exception $e) {
+          return response()->json(['error' => 'Failed to retrieve tasks by project ID.'], 500);
+      }
+  }
+  
+  
+  
   public function getTasksByProjectId($projectId) {
     $tasks = Task::where('project_id', $projectId)->get(['id', 'title', 'due_date', 'status']); // Ajoutez 'due_date' à la sélection
     return response()->json($tasks);

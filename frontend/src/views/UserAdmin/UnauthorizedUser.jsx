@@ -66,7 +66,7 @@ function UnauthorizedUser() {
   };
 
   return (
-    <div className="flex flex-col w-full mb-5">
+    <div className="flex flex-col  w-full mb-5">
       <h1 className="text-2xl pl-4 font-bold ">Unauthorized users</h1>
       <div className="user-table mt-6 card animated fadeInDown">
         <Card className="h-full w-full bg-white bg-opacity-35 ">

@@ -2,11 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+
+.progress-container {
+  width: 100%;
+  height: 15px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
+}
+
+.project-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.project-card {
+  width: 300px;
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Add more styles for visual appeal and responsiveness */
+
+
+.textLogo{
+font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;  font-size: 24px; /* Adjust font size as desired */
+}
+::-webkit-scrollbar{
+  background-color: transparent;
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb{
+  background-color: #9CA3AF;
+  border-radius: 10px;
+ 
+}
+.message-body {
+  padding: 0px 20px  0px 20px ;
+}
 .message {
   height: auto;
   /* width: auto; */
   max-width: 80%;
-  background-color:midnightblue;
   color: white;
   padding: 10px;
   border-radius: 15px;
@@ -14,23 +64,26 @@
   max-width: 300px;
   margin: 10px;
   /* display: inline-block; */
+  
 }
 .message-container {
   display: flex;
   align-items: flex-start;
   margin-bottom: 8px;
+  
 }
 
 .message {
   max-width: 70%;
   padding: 8px 12px;
   border-radius: 16px;
-  background-color: #f0f0f0;
+
 }
 
 .message.left {
   align-self: flex-start;
   background-color: #ffffff;
+  
 }
 
 .message.right {
@@ -41,10 +94,12 @@
 
 .message-content {
   word-wrap: break-word;
+  
 }
 
 .message-avatar {
   margin-right: 8px;
+
 }
 
 .date {
@@ -54,13 +109,14 @@
 }
 .left {
   display: flex;
-  justify-content: right;
-
+  justify-content: left;
+  width: fit-content;
+  margin-bottom: 10px;
 }
 .right {
   display: flex;
-  justify-content: left;
-  
+  justify-content: right;
+  margin-bottom: 10px;
 }
 .requestbg{
     height: 100%;
@@ -115,4 +171,12 @@ body {
   }
   
 
+  .table-container.enter {
+    transform: translateX(100%);  /* Start from off-screen right */
+    transition: transform 0.5s ease-in-out;
+  }
   
+  .table-container.show {
+    transform: translateX(0);  /* Move to final position */
+  }
+

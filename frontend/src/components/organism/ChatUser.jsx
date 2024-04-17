@@ -77,17 +77,23 @@ const ChatUser = ({ user, onUserSelect }) => {
             active
           />
         }
-        endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+        endMessage={
+          <Divider plain>
+            <span className="dark:text-gray-400">It is all, nothing more</span>{" "}
+            🤐
+          </Divider>
+        }
         scrollableTarget="scrollableDiv"
       >
         {data && (
           <List
+            className="text-white"
             dataSource={data}
             renderItem={(item, index) => (
               <div
                 onClick={() => onUserSelect(item)} // Appel de la fonction onUserSelect avec l'utilisateur sélectionné
               >
-                <Link to={`/chat/${item.id}`}>
+                <Link className="dark:text-gray-300" to={`/chat/${item.id}`}>
                   {" "}
                   {/* Utilisation de Link avec l'URL spécifiée */}
                   <List.Item
@@ -104,8 +110,14 @@ const ChatUser = ({ user, onUserSelect }) => {
                           <Avatar icon={<UserOutlined />} />
                         )
                       }
-                      title={item?.name}
-                      description={<small>Online</small>}
+                      title={
+                        <span className="dark:text-gray-300 user-name">
+                          {item?.name}
+                        </span>
+                      }
+                      // description={
+                      //   <small className="dark:text-gray-300">Online</small>
+                      // }
                     />
                     {/* <Badge count={Math.floor(Math.random() * 5)} /> */}
                   </List.Item>

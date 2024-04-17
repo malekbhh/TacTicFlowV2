@@ -106,7 +106,7 @@ function AuthorizedUser() {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row justify-between items-center mb-5">
+      <div className="flex flex-col  md:flex-row justify-between items-center mb-5">
         <h1 className="text-2xl pl-4 font-bold mt-2">Authorized users</h1>
         <button
           className="btn-add mb-3 md:mb-0 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"

@@ -42,31 +42,72 @@ const Message = ({ align, message, createdAt, user, currentUser }) => {
   const formattedDate = formatMessageDate(createdAt);
 
   return (
+    //     <div className={align}>
+    //       <div className="message-avatar">
+    //         {align === "left" &&
+    //           (user.avatar ? (
+    //             <Avatar src={user.avatar} />
+    //           ) : (
+    //             <Avatar icon={<UserOutlined />} />
+    //           ))}
+
+    //         {align === "right" &&
+    //           (currentUser.avatar ? (
+    //             <Avatar src={currentUser.avatar} />
+    //           ) : (
+    //             <Avatar icon={<UserOutlined />} />
+    //           ))}
+    //       </div>
+
+    //       <div className="message-content">
+    //         {/* {align === "left" && <div className="message-author">{user.name}</div>}
+    //         {align === "right" && (
+    //           <div className="message-author">{currentUser.name}</div>
+    //         )} */}
+
+    //         <div className="message-body">{message}</div>
+    //         <div className="message-date">{formattedDate}</div>
+    //       </div>
+    //     </div>
+    //   );
+    // };
     <div className={align}>
-      <div className="message-avatar">
-        {align === "left" &&
-          (user.avatar ? (
-            <Avatar src={user.avatar} />
-          ) : (
-            <Avatar icon={<UserOutlined />} />
-          ))}
-
-        {align === "right" &&
-          (currentUser.avatar ? (
-            <Avatar src={currentUser.avatar} />
-          ) : (
-            <Avatar icon={<UserOutlined />} />
-          ))}
-      </div>
-
       <div className="message-content">
-        {/* {align === "left" && <div className="message-author">{user.name}</div>}
+        {align === "left" && (
+          <div className="flex ">
+            <div className="message-avatar">
+              {user.avatar ? (
+                <Avatar src={user.avatar} />
+              ) : (
+                <Avatar icon={<UserOutlined />} />
+              )}
+            </div>
+            <div className="gap-1 flex flex-col">
+              <div
+                className=" rounded-2xl bg-midnightblue text-white py-1 px-3 max-w-96"
+                style={{ fontSize: "small" }}
+              >
+                {message}
+              </div>
+              <div className="justify-start pl-1 flex text-xs text-gray-600">
+                {formattedDate}
+              </div>
+            </div>
+          </div>
+        )}
         {align === "right" && (
-          <div className="message-author">{currentUser.name}</div>
-        )} */}
-
-        <div className="message-body">{message}</div>
-        <div className="message-date">{formattedDate}</div>
+          <div className="gap-1 flex flex-col">
+            <div
+              className="rounded-2xl bg-white py-1 px-3 max-w-96"
+              style={{ fontSize: "small" }}
+            >
+              {message}
+            </div>
+            <div className="justify-end pr-1 flex text-xs text-gray-600">
+              {formattedDate}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axiosClient from "../axios-client.js";
 import { useParams } from "react-router-dom";
 import Alert from "./Alert";
-import CreateTask from "./test/CreateTask";
+import { Avatar } from "antd";
 import ListTasks from "./test/ListTasks";
 import toast, { Toaster } from "react-hot-toast";
 import { DndProvider } from "react-dnd";
@@ -10,23 +10,35 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { BsPlus } from "react-icons/bs";
 import AddMemberTask from "./AddMemberTask.jsx";
 import adduser from "../assets/adduser.png";
-import exppic from "../assets/exppic.png";
+import { UserOutlined } from "@ant-design/icons"; // Import de l'icône utilisateur
 const ProjectDetails = () => {
   const { projectId } = useParams();
   const [tasks, setTasks] = useState([]);
+  const [members1, setMembersAff] = useState([]);
+
   const [project, setProject] = useState(null);
   const [showTable, setShowTable] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [isChef, setIsChef] = useState(false); // Ajout d'un état pour vérifier si l'utilisateur est chef de projet
-
+  const [avatarURL, setAvatarURL] = useState(""); // Etat local pour stocker l'URL de l'avatar
+  const [memberAdded, setMemberAdded] = useState("");
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
         const projectResponse = await axiosClient.get(`/projects/${projectId}`);
         setProject(projectResponse.data);
-
-        const employeesResponse = await axiosClient.get(`/employees`);
-        setEmployees(employeesResponse.data);
+        try {
+          const response = await axiosClient.get(`/usersAccount`);
+          const filteredData = response.data.data.map((user) => ({
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+          }));
+          setEmployees(filteredData);
+          console.log(employees);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
 
         const tasksResponse = await axiosClient.get(
           `/projects/${projectId}/tasks`
@@ -53,6 +65,20 @@ const ProjectDetails = () => {
     fetchProjectDetails();
   }, [projectId]);
 
+  useEffect(() => {
+    const fetchProjectMembers = async () => {
+      try {
+        const membersResponse = await axiosClient.get(
+          `/projects/${projectId}/members`
+        );
+        setMembersAff(membersResponse.data);
+      } catch (error) {
+        console.error("Error fetching project members:", error);
+      }
+    };
+
+    fetchProjectMembers();
+  }, [projectId]);
   const toggleTable = () => {
     setShowTable(!showTable);
   };
@@ -74,6 +100,18 @@ const ProjectDetails = () => {
       await axiosClient.post("/memberships", membershipData);
 
       toast.success("Member added successfully");
+
+      try {
+        const notificationResponse = await axiosClient.post(`/notifications`, {
+          message: `Memeber ${employee.email} added to project `,
+        });
+        setTimeout(() => {
+          window.location.reload(); // Recharge la page après 10 secondes
+        }, 2000);
+      } catch (error) {
+        console.error("Error sending project notification:", error);
+        toast.error("Error sending project notification. Please try again.");
+      }
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error);
@@ -90,22 +128,62 @@ const ProjectDetails = () => {
         {project && (
           <div className="dark:text-white w-full text-midnightblue">
             <div className="flex flex-col lg:flex-row  justify-between  items-center ">
-              <div className="flex -translate-x-2  bg-opacity-30 w-full justify-between items-start">
-                <div className="flex items-start justify-start  flex-col">
-                  <h2 className="text-xl font-semibold mb-4">
+              <div className="flex   bg-opacity-30 w-full justify-between items-start">
+                <div className="flex  items-start justify-start gap-6">
+                  <h2 className=" font-semibold text-3xl mb-4">
                     {project.title}
                   </h2>
-                  <p className="text-sm mb-6">{project.description}</p>
+                  <div className="flex items-center gap-2">
+                    {members1.map((member, index) =>
+                      member.avatar ? (
+                        <img
+                          key={index}
+                          className="w-8 h-8 rounded-full mr-2"
+                          src={member.avatar}
+                          alt="Avatar"
+                        />
+                      ) : (
+                        <Avatar
+                          key={index}
+                          className="w-8 h-8 rounded-full mr-2"
+                          icon={<UserOutlined />}
+                        />
+                      )
+                    )}
+                  </div>
+
+                  {/* {avatarURL && (
+                    <div className="flex items-center">
+                      <Avatar
+                        className="w-8 h-8 rounded-full mr-2"
+                        src={avatarURL}
+                        icon={<UserOutlined />}
+                      />
+                      <p className="text-sm">{memberAdded}</p>
+                    </div>
+                  )} */}
+                  {/* <p className="text-sm mb-6">{project.description}</p> */}
                 </div>
-                {isChef && (
-                  <button
-                    onClick={toggleTable}
-                    className="bg-white absolute top-0 right-0 flex p-2 rounded-full gap-2 dark:bg-gray-800"
-                  >
-                    <img className="h-6" src={adduser} alt="icon" />
-                    <p className="text-[#9CA3AF]">Share</p>
-                  </button>
-                )}
+
+                <div className="flex absolute  gap-8 top-24 right-2">
+                  {" "}
+                  {isChef && (
+                    <button
+                      onClick={toggleTable}
+                      className="bg-white   flex p-2 rounded-full gap-2 dark:bg-gray-800"
+                    >
+                      <img className="h-6" src={adduser} alt="icon" />
+                      <p className="text-[#9CA3AF]">Share</p>
+                    </button>
+                  )}
+                  {isChef && (
+                    <AddMemberTask
+                      projectId={projectId}
+                      tasks={tasks}
+                      setTasks={setTasks}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -131,7 +209,7 @@ const ProjectDetails = () => {
             className="fixed right-0 left-0 top-0 bottom-0 px-2 py-4 overflow-scroll z-50 justify-center items-center flex bg-[#00000080] scrollbar-hide"
           >
             <div
-              className={` flex justify-center items-start table-container mx-0 overflow-y-scroll rounded-lg h-[500px] shadow-md bg-white    dark:bg-slate-900 p-6 w-[450px]`}
+              className={` flex justify-center items-start table-container mx-0 overflow-y-scroll rounded-lg h-[500px] shadow-md bg-white    dark:bg-slate-900 p-6 `}
             >
               <table className="table-container ">
                 <thead className="table-header ">
@@ -151,15 +229,23 @@ const ProjectDetails = () => {
                       className="border-t-2 border-b-2 border-indigo-300 "
                       key={employee.id}
                     >
-                      <td className="flex  gap-4 justify-center items-center px-4 py-2">
-                        <img
-                          className=" w-8 h-8 rounded-full"
-                          src={exppic}
-                          alt="user photo"
-                        />
+                      <td className="px-4 py-2 flex items-center">
+                        {/* Afficher l'avatar de l'employé s'il existe, sinon afficher une image par défaut */}
+                        {employee.avatar ? (
+                          <img
+                            className="w-8 h-8 rounded-full mr-2"
+                            src={employee.avatar}
+                            alt="Avatar"
+                          />
+                        ) : (
+                          <Avatar
+                            className="w-8 h-8 rounded-full mr-2"
+                            icon={<UserOutlined />}
+                          />
+                        )}
                         {employee.name}
                       </td>
-                      <td className="   px-4 py-2">{employee.email}</td>
+                      <td className="px-4 py-2">{employee.email}</td>
                       <td className="px-4 flex items-center justify-center py-2">
                         {/* Appeler handleAddMember avec l'email de l'employé */}
                         <button
@@ -175,13 +261,6 @@ const ProjectDetails = () => {
               </table>
             </div>
           </div>
-        )}
-        {isChef && (
-          <AddMemberTask
-            projectId={projectId}
-            tasks={tasks}
-            setTasks={setTasks}
-          />
         )}
       </div>
     </DndProvider>

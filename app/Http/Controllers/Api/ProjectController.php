@@ -28,6 +28,44 @@ class ProjectController extends Controller
             return response()->json(['message' => 'No projects found for this user'], 404);
         }
     }
+    public function showProjectsWithRole(Request $request)
+    {
+        $user = $request->user();
+        $chefProjects = [];
+        $memberProjects = [];
+    
+        if (!$user->memberships->isEmpty()) {
+            foreach ($user->memberships as $membership) {
+            if ($membership->user_role === 'chef') {
+                    // Récupérer les IDs des projets pour lesquels l'utilisateur est un chef
+                    $chefProjectsIds[] = $membership->project_id;
+                } else {
+                    // Récupérer les IDs des projets pour lesquels l'utilisateur est un membre
+                    $memberProjectsIds[] = $membership->project_id;
+                }
+            }
+    
+    
+            // Récupérer les projets pour lesquels l'utilisateur est un chef
+            if (!empty($chefProjectsIds)) {
+                $chefProjects = Project::whereIn('id', $chefProjectsIds)->get();
+            }
+    
+            // Récupérer les projets pour lesquels l'utilisateur est un membre
+            if (!empty($memberProjectsIds)) {
+                $memberProjects = Project::whereIn('id', $memberProjectsIds)->get();
+            }
+    
+            // Répondre avec les projets en tant qu'admin, chef ou membre selon le rôle de l'utilisateur
+            return response()->json([
+                'chefProjects' => $chefProjects,
+                'memberProjects' => $memberProjects
+            ]);
+        } else {
+            // Aucune adhésion trouvée, renvoyer un message approprié
+            return response()->json(['message' => 'No projects found for this user'], 404);
+        }
+    }
    
     public function store(Request $request)
 {
